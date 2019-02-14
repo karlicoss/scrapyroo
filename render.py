@@ -35,13 +35,12 @@ def iter_data(f):
 def main():
     from argparse import ArgumentParser
     p = ArgumentParser()
+    p.add_argument('--input', type=str, default='rests.jl')
     p.add_argument('--output', type=str, default='menus.html')
     p.add_argument('--base-url', type=str, default='https://deliveroo.co.uk')
     args = p.parse_args()
 
-
-    # scrapedf = Path(sys.argv[1])
-    scrapedf = Path('rests.jl')
+    scrapedf = Path(args.input)
     when = datetime.fromtimestamp(scrapedf.stat().st_mtime)
     with scrapedf.open('r') as fo:
         datas = list(sorted(iter_data(fo), key=lambda d: d['restaurant']['name']))

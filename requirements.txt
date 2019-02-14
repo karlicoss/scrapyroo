@@ -1,0 +1,5 @@
+beautifulsoup4
+scrapy
+
+# for rendering resulting html
+dominate
