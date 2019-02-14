@@ -11,7 +11,7 @@ from dominate.util import text, raw # type: ignore
 
 STYLE = """
   .restaurant {
-    padding-bottom: 5em;
+    padding-top: 5em;
   }
   .menu {
     padding-left: 2em;
@@ -22,6 +22,9 @@ STYLE = """
   }
   a {
    text-decoration: none;
+  }
+  #results {
+    padding-left: 2em;
   }
 """
 
@@ -43,7 +46,6 @@ def main():
     with scrapedf.open('r') as fo:
         datas = list(sorted(iter_data(fo), key=lambda d: d['restaurant']['name']))
 
-    # datas = datas[:10]
 
     doc = dominate.document(title=f'scrapyroo: {len(datas)} results from {when.strftime("%H:%M %d %B %Y")}')
     with doc.head:
@@ -52,16 +54,25 @@ def main():
 
     index_items = []
     with doc:
+        # TODO make sure cas insensitive
+        div('enter search terms. use + for logical AND, e.g. +pasta +seafood')
+        input(type="text", id="query", size='80')
+        button('search', type='button', onclick='search(this)')
+        div('results:')
+        with div(id='results'):
+            pass
+
         for data in datas:
             index_item = {}
             with div(cls='restaurant'):
                 rest = data['restaurant']
 
                 rname = rest['name']
-                index_item['name'] = rname # TODO get some id?
+                uname = rest['uname']
+                index_item['uname'] = uname
 
                 with div(cls='rest-name'):
-                    a(rname, href=args.base_url + data['urls']['current'])
+                    a(rname, name=uname, href=args.base_url + data['urls']['current'])
                     with span(cls='times'):
                         text(rest['opens_at'] + ' to ' + rest['closes_at'])
                 menu = data['menu']['items']
@@ -74,7 +85,7 @@ def main():
                             idesc = m['description'] or ''
                             div(iname)
                             div(idesc)
-                            div(m['price'])
+                            div(m['raw_price'])
                             menu_items += iname + ' ' + idesc + ' '
                 index_item['text'] = menu_items
             index_items.append(index_item)
@@ -84,13 +95,46 @@ def main():
             raw("""
 var documents = """ + json.dumps(index_items) + """;
 var idx = lunr(function () {
-  this.ref('name')
+  this.ref('uname')
   this.field('text')
 
   documents.forEach(function (doc) {
     this.add(doc)
   }, this)
-})
+});
+
+
+window.onload = function () {
+  document.getElementById('query').addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+       search();
+    }
+  });
+};
+
+function search() {
+    var query = document.getElementById('query').value;
+    var results = idx.search(query);
+    var container = document.getElementById('results');
+    // clear previous results
+    while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+    }
+    if (results.length == 0) {
+        container.appendChild(document.createTextNode("nothing found :("));
+    } else {
+        for (r of results) {
+            var linkc = document.createElement('div');
+            var link = document.createElement('a');
+            link.title = r.ref;
+            link.href = '#' + r.ref;
+            link.textContent = r.score.toFixed(2) + ' ' + r.ref;
+            linkc.appendChild(link);
+            container.appendChild(linkc);
+            console.log(r);
+        }
+    }
+}
         """)
 
 
