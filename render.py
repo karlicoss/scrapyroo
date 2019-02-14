@@ -9,6 +9,22 @@ import dominate
 from dominate.tags import *
 from dominate.util import text, raw # type: ignore
 
+STYLE = """
+  .restaurant {
+    padding-bottom: 5em;
+  }
+  .menu {
+    padding-left: 2em;
+  }
+
+  .menu-item {
+    padding-bottom: 0.5em;
+  }
+  a {
+   text-decoration: none;
+  }
+"""
+
 def iter_data(f):
     for line in f:
         yield json.loads(line)
@@ -27,46 +43,55 @@ def main():
     with scrapedf.open('r') as fo:
         datas = list(sorted(iter_data(fo), key=lambda d: d['restaurant']['name']))
 
+    # datas = datas[:10]
+
     doc = dominate.document(title=f'scrapyroo: {len(datas)} results from {when.strftime("%H:%M %d %B %Y")}')
     with doc.head:
-        style("""
-.restaurant {
-  padding-bottom: 5em;
-}
-.menu {
-  padding-left: 2em;
-}
+        style(STYLE)
+        script(src='https://unpkg.com/lunr/lunr.js')
 
-.menu-item {
-  padding-bottom: 0.5em;
-}
-a {
- text-decoration: none;
-}
-
-        """)
+    index_items = []
     with doc:
-        for data in datas[:10]:
+        for data in datas:
+            index_item = {}
             with div(cls='restaurant'):
-                # print(data['name'])
-                # import ipdb; ipdb.set_trace() 
-                # 'urls' 'current'
-                # 'restaurant' : 'name' 'menu' 'opens_at', 'closes_at',
                 rest = data['restaurant']
+
+                rname = rest['name']
+                index_item['name'] = rname # TODO get some id?
+
                 with div(cls='rest-name'):
-                    a(rest['name'], href=args.base_url + data['urls']['current'])
+                    a(rname, href=args.base_url + data['urls']['current'])
                     with span(cls='times'):
                         text(rest['opens_at'] + ' to ' + rest['closes_at'])
                 menu = data['menu']['items']
+
+                menu_items = ""
                 with div(cls='menu'):
                     for m in menu: # TODO sort as well
                         with div(cls='menu-item'):
-                            div(m['name'])
-                            div(m['description'] or '')
+                            iname = m['name']
+                            idesc = m['description'] or ''
+                            div(iname)
+                            div(idesc)
                             div(m['price'])
+                            menu_items += iname + ' ' + idesc + ' '
+                index_item['text'] = menu_items
+            index_items.append(index_item)
 
+    with doc.head:
+        with script():
+            raw("""
+var documents = """ + json.dumps(index_items) + """;
+var idx = lunr(function () {
+  this.ref('name')
+  this.field('text')
 
-                # 'menu' : 'items': 'name', 'price', 'description' 
+  documents.forEach(function (doc) {
+    this.add(doc)
+  }, this)
+})
+        """)
 
 
     with open(args.output, 'w') as fo:
