@@ -20,11 +20,14 @@ class QuotesSpider(scrapy.Spider):
     def area(self):
         return self.settings.attributes['AREA'].value
 
-    def start_requests(self):
-        # TODO move to a variable
-        url = f'https://deliveroo.co.uk/restaurants/{self.area}?postcode={self.postcode}'
+    @property
+    def base_url(self):
+        return self.settings.attributes['BASE_URL'].value
 
-        print("Hang on... parsing initial restaurants list via headless browser...")
+    def start_requests(self):
+        url = f'{self.base_url}/restaurants/{self.area}?postcode={self.postcode}'
+
+        print(f"Hang on... parsing initial restaurants list from {url} via headless browser...")
 
         # TODO backoff wait time, check if 0 results?
         main = scrape_dynamic(url, headless=True, wait=5)
@@ -39,7 +42,7 @@ class QuotesSpider(scrapy.Spider):
             yield scrapy.Request(url=l, callback=self.parse_rest)
 
     def parse_rest(self, response):
-        print(f"Procssing: {response.url}")
+        print(f"Processing: {response.url}")
         items = response.css('li.menu-index-page__item')
         react_data = json.loads(response.css('script.js-react-on-rails-component').xpath('text()').get())
         yield react_data

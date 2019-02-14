@@ -32,15 +32,13 @@ def iter_data(f):
     for line in f:
         yield json.loads(line)
 
-def main():
-    from argparse import ArgumentParser
-    p = ArgumentParser()
-    p.add_argument('--input', type=str, default='rests.jl')
-    p.add_argument('--output', type=str, default='menus.html')
+def setup_parser(p):
+    p.add_argument('--json', type=str, default='menus.jl')
+    p.add_argument('--output', type=str, default='scrapyroo.html')
     p.add_argument('--base-url', type=str, default='https://deliveroo.co.uk')
-    args = p.parse_args()
 
-    scrapedf = Path(args.input)
+def run(args):
+    scrapedf = Path(args.json)
     when = datetime.fromtimestamp(scrapedf.stat().st_mtime)
     with scrapedf.open('r') as fo:
         datas = list(sorted(iter_data(fo), key=lambda d: d['restaurant']['name']))
@@ -141,9 +139,11 @@ function search() {
         fo.write(doc.render())
 
 
-
-
-
+def main():
+    p = argparse.ArgumentParser()
+    setup_parser(p)
+    args = p.parse_args()
+    run(args)
 
 if __name__ == '__main__':
     main()
