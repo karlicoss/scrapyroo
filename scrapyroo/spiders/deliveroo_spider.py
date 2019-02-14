@@ -27,7 +27,8 @@ class QuotesSpider(scrapy.Spider):
 
         print("Hang on... parsing initial restaurants list via headless browser...")
         main = scrape_dynamic(url, headless=True, wait=5)
-        from bs4 import BeautifulSoup
+        from bs4 import BeautifulSoup # TODO can we reuse scrapy's selectors for that???
+        # TODO scrapy module from headless chromium? There must be something..
         soup = BeautifulSoup(main, "html.parser")
         rest_tags = list(soup.find('ol').children)
         links = list(sorted(x.find('a').attrs['href'] for x in rest_tags))
@@ -35,7 +36,7 @@ class QuotesSpider(scrapy.Spider):
         print(f"Total restaurants: {len(links)}")
         # TODO if 0, try again with biggger timestamp?
 
-        for l in links[:10]:
+        for l in links:
             yield scrapy.Request(url=l, callback=self.parse_rest)
         # yield SplashRequest(url=url, callback=self.parse, args={
         #     'wait': 3.0,
@@ -44,13 +45,14 @@ class QuotesSpider(scrapy.Spider):
 
 
     def parse_rest(self, response):
+        print(f"Procssing: {response.url}")
         items = response.css('li.menu-index-page__item')
 
 
         import json
         react_data = json.loads(response.css('script.js-react-on-rails-component').xpath('text()').get())
-        # yield react_data
-        yield {'r': react_data['restaurant']['name']}
+        yield react_data
+        # yield {'r': react_data['restaurant']['name']}
         # 'menu'
         # restaurant
         # # TODO modifier_group???
