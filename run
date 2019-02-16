@@ -16,16 +16,20 @@ def main():
 
     jpath = Path(args.json)
     if jpath.exists():
-        jpath.rename(jpath.name + '.old') # to prevent scraper from appending
+        jpath.rename(str(jpath) + '.old') # to prevent scraper from appending
 
-    check_call([
+    cmd = [
         'scrapy', 'crawl', 'deliveroo_spider',
         '-o', str(jpath),
         '-s', 'LOG_LEVEL=INFO',
         '-s', 'BASE_URL=' + args.base_url,
         '-s', 'POSTCODE=' + args.postcode,
         '-s', 'AREA=' + args.area
-    ], cwd=Path(__file__).parent)
+    ]
+    print("scraping: " + ' '.join(cmd))
+    check_call(cmd, cwd=Path(__file__).parent)
+
+    print("rendering...")
     render.run(args)
 
 

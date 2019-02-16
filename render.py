@@ -4,6 +4,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+import logging
 
 import dominate
 from dominate.tags import *
@@ -25,6 +26,10 @@ STYLE = """
   }
   #results {
     padding-left: 2em;
+  }
+
+  .error {
+    color: red;
   }
 """
 
@@ -60,32 +65,36 @@ def run(args):
             pass
 
         for data in datas:
-            index_item = {}
             with div(cls='restaurant'):
-                rest = data['restaurant']
+                try:
+                    index_item = {}
+                    rest = data['restaurant']
 
-                rname = rest['name']
-                uname = rest['uname']
-                index_item['uname'] = uname
+                    rname = rest['name']
+                    uname = rest['uname']
+                    index_item['uname'] = uname
 
-                with div(cls='rest-name'):
-                    a(rname, name=uname, href=args.base_url + data['urls']['current'])
-                    with span(cls='times'):
-                        text(rest['opens_at'] + ' to ' + rest['closes_at'])
-                menu = data['menu']['items']
+                    with div(cls='rest-name'):
+                        a(rname, name=uname, href=args.base_url + data['urls']['current'])
+                        with span(cls='times'):
+                            text(rest['opens_at'] + ' to ' + rest.get('closes_at', '???'))
+                    menu = data['menu']['items']
 
-                menu_items = ""
-                with div(cls='menu'):
-                    for m in menu: # TODO sort as well
-                        with div(cls='menu-item'):
-                            iname = m['name']
-                            idesc = m['description'] or ''
-                            div(iname)
-                            div(idesc)
-                            div(m['raw_price'])
-                            menu_items += iname + ' ' + idesc + ' '
-                index_item['text'] = menu_items
-            index_items.append(index_item)
+                    menu_items = ""
+                    with div(cls='menu'):
+                        for m in menu: # TODO sort as well
+                            with div(cls='menu-item'):
+                                iname = m['name']
+                                idesc = m['description'] or ''
+                                div(iname)
+                                div(idesc)
+                                div(m['raw_price'])
+                                menu_items += iname + ' ' + idesc + ' '
+                    index_item['text'] = menu_items
+                    index_items.append(index_item)
+                except Exception as e:
+                    logging.exception(e)
+                    div('ERROR WHILE RENDERING: ' + str(e), cls='error')
 
     with doc.head:
         with script():
