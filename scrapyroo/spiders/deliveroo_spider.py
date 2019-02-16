@@ -6,10 +6,9 @@ from scrapy.utils.markup import remove_tags as untag # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 # TODO reuse scrapy's selectors for that???
 
-# TODO get rid of this dependency
-from kython.scrape import scrape_dynamic
+from .utils import scrape_dynamic
 
-class QuotesSpider(scrapy.Spider):
+class DeliverooSpider(scrapy.Spider):
     name = "deliveroo_spider"
     user_agent = 'Mozilla/5.0'
     @property

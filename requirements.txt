@@ -1,5 +1,8 @@
-beautifulsoup4
 scrapy
 
 # for rendering resulting html
 dominate
+
+# for scraping main deliveroo page.. too much JS for scrapy to cope with
+beautifulsoup4
+selenium

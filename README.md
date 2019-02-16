@@ -2,7 +2,7 @@ Cause I got sick of clicking through Deliveroo restaurants. Full text search is 
 
 # Dependencies
 
-* headless chrome/chromium
+* headless chromium (should be bundled with chromium by default)
     
     Necessary to scrape deliveroo main page. Sadly, it's fool of dynamic shit, so can't get away with using http requests.
     If you know how to avoid it please let me know!
