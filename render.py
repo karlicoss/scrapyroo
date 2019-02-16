@@ -77,7 +77,7 @@ def run(args):
                     with div(cls='rest-name'):
                         a(rname, name=uname, href=args.base_url + data['urls']['current'])
                         with span(cls='times'):
-                            text(rest['opens_at'] + ' to ' + rest.get('closes_at', '???'))
+                            text((rest['opens_at'] or '???') + ' to ' + (rest['closes_at'] or '???'))
                     menu = data['menu']['items']
 
                     menu_items = ""
