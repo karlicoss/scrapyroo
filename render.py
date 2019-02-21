@@ -65,13 +65,12 @@ def run(args):
             pass
 
         for data in datas:
-            with div(cls='restaurant'):
-                try:
-                    index_item = {}
-                    rest = data['restaurant']
-
+            try:
+                rest = data['restaurant']
+                uname = rest['uname']
+                index_item = {}
+                with div(cls='restaurant', id=uname):
                     rname = rest['name']
-                    uname = rest['uname']
                     index_item['uname'] = uname
 
                     with div(cls='rest-name'):
@@ -91,10 +90,10 @@ def run(args):
                                 div(m['raw_price'])
                                 menu_items += iname + ' ' + idesc + ' '
                     index_item['text'] = menu_items
-                    index_items.append(index_item)
-                except Exception as e:
-                    logging.exception(e)
-                    div('ERROR WHILE RENDERING: ' + str(e), cls='error')
+                index_items.append(index_item)
+            except Exception as e:
+                logging.exception(e)
+                div('ERROR WHILE RENDERING: ' + str(e), cls='error')
 
     with doc.head:
         with script():
@@ -129,7 +128,10 @@ function search() {
     if (results.length == 0) {
         container.appendChild(document.createTextNode("nothing found :("));
     } else {
+        const found = new Set();
         for (r of results) {
+            found.add(r.ref);
+
             var linkc = document.createElement('div');
             var link = document.createElement('a');
             link.title = r.ref;
@@ -138,6 +140,12 @@ function search() {
             linkc.appendChild(link);
             container.appendChild(linkc);
             console.log(r);
+        }
+
+        const rests = document.getElementsByClassName('restaurant');
+        for (r of rests) {
+            const visible = found.has(r.id);
+            r.hidden = !visible;
         }
     }
 }
