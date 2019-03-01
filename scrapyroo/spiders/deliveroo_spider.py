@@ -2,9 +2,7 @@ import json
 
 import scrapy # type: ignore
 from scrapy.utils.markup import remove_tags as untag # type: ignore
-
-from bs4 import BeautifulSoup # type: ignore
-# TODO reuse scrapy's selectors for that???
+from scrapy.selector import Selector # type: ignore
 
 from .utils import scrape_dynamic
 
@@ -30,10 +28,8 @@ class DeliverooSpider(scrapy.Spider):
 
         # TODO backoff wait time, check if 0 results?
         main = scrape_dynamic(url, headless=True, wait=5)
-        # TODO scrapy module from headless chromium? There must be something..
-        soup = BeautifulSoup(main, "html.parser")
-        rest_tags = list(soup.find('ol').children)
-        links = list(sorted(x.find('a').attrs['href'] for x in rest_tags))
+        sel = Selector(text=main)
+        links = sel.xpath('//ol//a/@href').getall()
         # TODO still some sort of discrepancy, 492 vs 500? but at least it's very close now
         print(f"Total restaurants: {len(links)}")
 

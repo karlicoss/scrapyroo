@@ -4,5 +4,4 @@ scrapy
 dominate
 
 # for scraping main deliveroo page.. too much JS for scrapy to cope with
-beautifulsoup4
 selenium
