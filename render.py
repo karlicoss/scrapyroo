@@ -31,6 +31,11 @@ STYLE = """
   .error {
     color: red;
   }
+
+  mark {
+      background: orange;
+      color: black;
+  }
 """
 
 def iter_data(f):
@@ -53,6 +58,7 @@ def run(args):
     with doc.head:
         style(STYLE)
         script(src='https://unpkg.com/lunr/lunr.js')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js")
 
     index_items = []
     with doc:
@@ -118,6 +124,12 @@ window.onload = function () {
 };
 
 function search() {
+    const mark_options = {
+        caseSensitive: false,
+        ignorePunctuation: ":;.,-–—‒_(){}[]!'\\"+=".split(""),
+        diacritics: false, /* caused some crazy shit while matching... */
+    };
+
     var query = document.getElementById('query').value;
     var results = idx.search(query);
     var container = document.getElementById('results');
@@ -125,6 +137,10 @@ function search() {
     while (container.hasChildNodes()) {
         container.removeChild(container.lastChild);
     }
+
+    new Mark("div.restaurant").unmark(mark_options);
+
+
     if (results.length == 0) {
         container.appendChild(document.createTextNode("nothing found :("));
     } else {
@@ -139,15 +155,23 @@ function search() {
             link.textContent = r.score.toFixed(2) + ' ' + r.ref;
             linkc.appendChild(link);
             container.appendChild(linkc);
-            console.log(r);
         }
 
+        const visible_rests = [];
         const rests = document.getElementsByClassName('restaurant');
         for (r of rests) {
             const visible = found.has(r.id);
             r.hidden = !visible;
+            if (visible) {
+                visible_rests.push(r);
+            }
         }
+        console.log('visible: ', visible_rests);
+        const mark_query = query.replace(/[^a-zA-Z0-9]/g, ' ').split(' ');
+        console.log('marking: ', mark_query);
+        new Mark(visible_rests).mark(mark_query, mark_options);
     }
+
 }
         """)
 
