@@ -27,6 +27,7 @@ def main():
         '-s', 'AREA=' + args.area
     ]
     print("scraping: " + ' '.join(cmd))
+    # TODO shit. if part of scraping fails, scrapy doesn't necessarily exit with code 1
     check_call(cmd, cwd=Path(__file__).parent)
 
     print("rendering...")

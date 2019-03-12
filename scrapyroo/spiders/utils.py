@@ -8,7 +8,7 @@ def get_chrome_driver(headless=True):
     if headless:
         options.add_argument('--headless')
     options.add_argument('--disable-gpu')  # Last I checked this was necessary.
-    return webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver", chrome_options=options)
+    return webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=options)
 
 def scrape_dynamic(url: str, wait=None, *args, **kwargs) -> str:
     driver = get_chrome_driver(*args, **kwargs)

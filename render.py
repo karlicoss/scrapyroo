@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 import logging
 
-import dominate
+import dominate # type: ignore
 from dominate.tags import *
 from dominate.util import text, raw # type: ignore
 
