@@ -16,6 +16,7 @@ STYLE = """
   }
   .menu {
     padding-left: 2em;
+    font-family: sans-serif;
   }
 
   .menu-item {
@@ -91,9 +92,13 @@ def run(args):
                             with div(cls='menu-item'):
                                 iname = m['name']
                                 idesc = m['description'] or ''
-                                div(iname)
+                                price = m['raw_price']
+                                pound, pence = divmod(price, 1)
+                                ps = f'{price:.0f}' if pence < 0.1 else f'{price:.1f}'
+
+                                div(iname + ' ' + ps)
                                 div(idesc)
-                                div(m['raw_price'])
+
                                 menu_items += iname + ' ' + idesc + ' '
                     index_item['text'] = menu_items
                 index_items.append(index_item)
