@@ -29,7 +29,8 @@ class DeliverooSpider(scrapy.Spider):
         # TODO backoff wait time, check if 0 results?
         main = scrape_dynamic(url, headless=True, wait=5)
         sel = Selector(text=main)
-        links = sel.xpath('//ol//a/@href').getall()
+        # TODO maybe, worth moving selector in config so it's easier to fix it?
+        links = sel.xpath("//a[contains(@href, '/menu/')]/@href").getall()
         # TODO still some sort of discrepancy, 492 vs 500? but at least it's very close now
         print(f"Total restaurants: {len(links)}")
 
