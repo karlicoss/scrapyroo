@@ -43,12 +43,12 @@ def iter_data(f):
         yield json.loads(line)
 
 def setup_parser(p):
-    p.add_argument('--json', type=str, default='menus.jl')
+    p.add_argument('--json', type=Path, default=Path('menus.jl'))
     p.add_argument('--output', type=str, default='scrapyroo.html')
     p.add_argument('--base-url', type=str, default='https://deliveroo.co.uk')
 
 def run(args):
-    scrapedf = Path(args.json)
+    scrapedf = args.json
     when = datetime.fromtimestamp(scrapedf.stat().st_mtime)
     with scrapedf.open('r') as fo:
         datas = list(sorted(iter_data(fo), key=lambda d: d['restaurant']['name']))

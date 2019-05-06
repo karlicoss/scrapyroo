@@ -14,21 +14,27 @@ def main():
     p.add_argument('--postcode', required=True)
     args = p.parse_args()
 
-    jpath = Path(args.json)
-    if jpath.exists():
-        jpath.rename(str(jpath) + '.old') # to prevent scraper from appending
+    # shit. if part of scraping fails, scrapy doesn't necessarily exit with code 1
+    # so easiest seems to be checking externally.
+    jpath_tmp = args.json.with_suffix('.tmp.jl')
+    if jpath_tmp.exists():
+        jpath_tmp.unlink()
 
     cmd = [
         'scrapy', 'crawl', 'deliveroo_spider',
-        '-o', str(jpath),
+        '-o', str(jpath_tmp),
         '-s', 'LOG_LEVEL=INFO',
         '-s', 'BASE_URL=' + args.base_url,
         '-s', 'POSTCODE=' + args.postcode,
         '-s', 'AREA=' + args.area
     ]
     print("scraping: " + ' '.join(cmd))
-    # TODO shit. if part of scraping fails, scrapy doesn't necessarily exit with code 1
     check_call(cmd, cwd=Path(__file__).parent)
+
+    if len(jpath_tmp.read_text().splitlines()) == 0:
+        raise RuntimeError("Scrapy didn't receive any results :(")
+
+    jpath_tmp.rename(args.json)
 
     print("rendering...")
     render.run(args)
