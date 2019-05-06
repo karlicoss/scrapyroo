@@ -4,8 +4,6 @@ import scrapy # type: ignore
 from scrapy.utils.markup import remove_tags as untag # type: ignore
 from scrapy.selector import Selector # type: ignore
 
-from .utils import scrape_dynamic
-
 class DeliverooSpider(scrapy.Spider):
     name = "deliveroo_spider"
     user_agent = 'Mozilla/5.0'
@@ -23,18 +21,15 @@ class DeliverooSpider(scrapy.Spider):
 
     def start_requests(self):
         url = f'{self.base_url}/restaurants/{self.area}?postcode={self.postcode}'
+        yield scrapy.Request(url=url, callback=self.parse_main)
 
-        print(f"Hang on... parsing initial restaurants list from {url} via headless browser...")
-
-        # TODO backoff wait time, check if 0 results?
-        main = scrape_dynamic(url, headless=True, wait=5)
-        sel = Selector(text=main)
+    def parse_main(self, response):
         # TODO maybe, worth moving selector in config so it's easier to fix it?
-        links = sel.xpath("//a[contains(@href, '/menu/')]/@href").getall()
+        links = response.xpath("//a[contains(@href, '/menu/')]/@href").getall()
         # TODO still some sort of discrepancy, 492 vs 500? but at least it's very close now
         print(f"Total restaurants: {len(links)}")
 
-        for l in links:
+        for l in links[:3]:
             yield scrapy.Request(url=l, callback=self.parse_rest)
 
     def parse_rest(self, response):
