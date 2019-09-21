@@ -29,8 +29,8 @@ class DeliverooSpider(scrapy.Spider):
         # TODO still some sort of discrepancy, 492 vs 500? but at least it's very close now
         print(f"Total restaurants: {len(links)}")
 
-        for l in links[:3]:
-            yield scrapy.Request(url=l, callback=self.parse_rest)
+        for l in links:
+            yield scrapy.Request(url=self.base_url + l, callback=self.parse_rest)
 
     def parse_rest(self, response):
         print(f"Processing: {response.url}")
