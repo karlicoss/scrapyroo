@@ -18,3 +18,15 @@ to your crontab to run once a day, e.g. in the morning or something. Presumably,
 # Usage
 
 Open `output.html` mentioned above and search. Yes, that easy.
+
+
+# TODO tantivy 
+
+    # run indexer
+    tantivy serve -i scrapyroo-index
+
+    # run chromium without cors
+    chromium-browser --disable-web-security --user-data-dir /L/tmp/whatever
+    
+    # open search
+    file:///L/zzz_syncthing/coding/scrapyroo/index.html
