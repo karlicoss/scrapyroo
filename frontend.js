@@ -2,6 +2,24 @@
 
 const e = React.createElement;
 
+
+function handle_body(res) {
+    // TODO not sure why it's an array of length 1?
+    const body = res.doc.body[0];
+    return body.split('\n').map((item, key) => {
+        
+        // TODO what's up with non unique key???
+        // console.log(key);
+    return e(
+        'span',
+        {key: key},
+        [
+            item,
+            e('br'),
+        ],
+    );});
+}
+
 class SearchResults extends React.Component {
     constructor(props) {
         super(props);
@@ -10,6 +28,7 @@ class SearchResults extends React.Component {
         };
     }
 
+    // TODO FIXME children with the same key?
     render() {
         const children = this.state.results.map(res => e(
             'div',
@@ -21,7 +40,7 @@ class SearchResults extends React.Component {
                 e('div', {key: 'heading', className: 'heading'}, `score: ${res.score} ${res.doc.title}`),
                 e('div',
                   {key: 'body'   , className: 'body'   },
-                  res.doc.body[0].substring(0, 200) + "...",
+                  handle_body(res),
                  ),
             ]
         ));
