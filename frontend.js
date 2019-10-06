@@ -3,6 +3,9 @@
 const e = React.createElement;
 
 
+// const ENDPOINT = 'https://localhost:3000/api/';
+const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
+
 function handle_body(res) {
     // TODO not sure why it's an array of length 1?
     const body = res.doc.body[0];
@@ -56,7 +59,7 @@ class SearchResults extends React.Component {
                             const qq = document.querySelector('#query');
                             const q = qq.value;
 
-                            reqwest({url: `http://localhost:3000/api/?q=${q}&nhits=20`,  contentType: 'application/json', method: 'GET'}).then(res => {
+                            reqwest({url: `${ENDPOINT}?q=${q}&nhits=20`,  contentType: 'application/json', method: 'GET'}).then(res => {
                                 console.log(res);
 
                                 this.setState({ results: res.hits });
