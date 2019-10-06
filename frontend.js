@@ -48,7 +48,6 @@ class SearchResults extends React.Component {
             'div',
             {},
             [
-                e('div', {key: 'results'}, children),
                 e(
                     'button',
                     {
@@ -65,6 +64,12 @@ class SearchResults extends React.Component {
                         }},
                     'Search'
                 ),
+                e('input', {
+                    type: 'text',
+                    id: 'query',
+                    value: 'chicken AND soup',
+                }),
+                e('div', {key: 'results'}, children),
             ]
         );
     }
