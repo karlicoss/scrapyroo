@@ -9,12 +9,23 @@ const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
 function handle_body(res) {
     // TODO not sure why it's an array of length 1?
     // const body = res.doc.body[0];
-    let body = res.snippet_html;
-    body = body.replace('\n', '<br>');
+    let snippet = res.snippet;
+    let body = res.doc.body[0];
+    console.log(snippet.highlighted);
+    let hl = "";
+    let cur = 0;
+    for (let [start, stop] of snippet.highlighted) {
+        hl += body.substring(cur, start);
+        hl += "[";
+        hl += body.substring(start, stop);
+        hl += "]";
+        cur = stop;
+    }
+    hl += body.substring(stop, body.length);
     return e(
         'div',
         {
-            dangerouslySetInnerHTML: {__html: body},
+            dangerouslySetInnerHTML: {__html: hl},
         }
     );
     // return body.split('\n').map((item, key) => {
@@ -80,7 +91,7 @@ class SearchResults extends React.Component {
                 e('input', {
                     type: 'text',
                     id: 'query',
-                    value: 'chicken AND soup',
+                    value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
                 }),
                 e('div', {key: 'results'}, children),
             ]
