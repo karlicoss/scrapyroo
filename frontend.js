@@ -8,19 +8,29 @@ const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
 
 function handle_body(res) {
     // TODO not sure why it's an array of length 1?
-    const body = res.doc.body[0];
-    return body.split('\n').map((item, key) => {
-        
+    // const body = res.doc.body[0];
+    let body = res.snippet_html;
+    body = body.replace('\n', '<br>');
+    return e(
+        'div',
+        {
+            dangerouslySetInnerHTML: {__html: body},
+        }
+    );
+    // return body.split('\n').map((item, key) => {
         // TODO what's up with non unique key???
         // console.log(key);
-    return e(
-        'span',
-        {key: key},
-        [
-            item,
-            e('br'),
-        ],
-    );});
+    //     return e(
+    //         'span',
+    //         {
+    //             key: key,
+    //             dangerouslySetInnerHTML: {'__html': 'hi'},
+    //         },
+    //         [
+    //             e('br'),
+    //         ],
+    //     );
+    // });
 }
 
 class SearchResults extends React.Component {
