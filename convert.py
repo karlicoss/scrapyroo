@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from subprocess import check_call
 import sys
+import shutil
 import tempfile
 
 import argparse
@@ -12,21 +13,66 @@ def main():
     p.add_argument('input', type=Path)
     p.add_argument('--purge-index', action='store_true')
     args = p.parse_args()
-
     path = args.input
 
-    if args.purge_index:
-        check_call(['./scrapyroo-index/clean'])
+    indexer = index_py
+    # index_cli
 
+    ipath = Path('scrapyroo-index-2') # TODO FIXME
+    if args.purge_index:
+        # check_call(['scrapyroo-index/clean'])
+        shutil.rmtree(str(ipath))
+        ipath.mkdir()
+
+    indexer(path, purge=args.purge_index)
+
+def index_py(path: Path, purge: bool=False):
+    assert purge # TODO not sure what do we do?
+    import tantivy # type: ignore
+
+    # TODO how to reuse schema??
+    schema_builder = tantivy.SchemaBuilder()
+    schema_builder.add_text_field('title', stored=True, index_option='position')
+    schema_builder.add_text_field('body' , stored=True, index_option='position')
+    # TODO doesn't support 'indexing': none??
+    schema_builder.add_text_field('url'  , stored=True, index_option='basic')
+    schema = schema_builder.build()
+
+    # idx = tantivy.Index(schema, 'scrapyroo-index', reuse=True)
+    index = tantivy.Index(schema, 'scrapyroo-index-2')
+
+    writer = index.writer()
+
+    with path.open('r') as fo:
+        for m in iter_menus(fo):
+            writer.add_document(tantivy.Document(**m))
+    writer.commit()
+
+    index.reload()
+
+    searcher = index.searcher()
+    query = index.parse_query("chicken AND soup", ['title', 'body', 'url'])
+    top_docs = tantivy.TopDocs(20)
+
+    from pprint import pprint
+    for score, address in searcher.search(query, top_docs):
+        doc = searcher.doc(address)
+        print(doc)
+        # pprint(doc.to_dict())
+
+
+def index_cli(path: Path, purge: bool=False):
     with tempfile.TemporaryDirectory() as tdir:
         tfile = Path(tdir) / 'data.json'
         with tfile.open('w') as tf, path.open('r') as ff:
-            convert(ff, tf)
+            for o in iter_menus(ff):
+                json.dump(o, tf)
+                tf.write('\n')
 
         with tfile.open('r') as fo:
             check_call(['tantivy', 'index', '-i', 'scrapyroo-index'], stdin=fo)
 
-def convert(from_, to):
+def iter_menus(from_):
     for line in from_:
         j = json.loads(line)
 
@@ -53,13 +99,11 @@ def convert(from_, to):
             # TODO use positions to highlight?
             body += iname + ' ' + ps + ' ' + idesc + '\n'
 
-        o = {
+        yield {
             'url'  : url,
             'title': name or '',
             'body' : body,
         }
-        json.dump(o, to)
-        to.write('\n')
 
 if __name__ == '__main__':
     main()
