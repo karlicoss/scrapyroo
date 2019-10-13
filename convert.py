@@ -16,14 +16,14 @@ def main():
     args = p.parse_args()
     path = args.input
 
-    indexer = index_py
-    # index_cli
+    # indexer = index_py
+    indexer = index_cli
 
-    ipath = Path('scrapyroo-index-2') # TODO FIXME
+    ipath = Path('scrapyroo-index') # TODO FIXME
     if args.purge_index:
-        # check_call(['scrapyroo-index/clean'])
-        shutil.rmtree(str(ipath))
-        ipath.mkdir()
+        check_call(['scrapyroo-index/clean'])
+        # shutil.rmtree(str(ipath))
+        # ipath.mkdir()
 
     indexer(path, purge=args.purge_index)
 
@@ -99,6 +99,19 @@ def iter_menus(from_):
 
             # TODO use positions to highlight?
             body += iname + ' ' + ps + ' ' + idesc + '\n'
+
+        # TODO FIXME issue in cocotte
+        # https://repl.it/languages/rust
+        # if 'Add Chicken Soup' in body:
+        #     import ipdb; ipdb.set_trace() 
+        #     pass
+
+        # dbg!(text.len());
+        #         let ch: Vec<char> = text.chars().collect();
+        #         dbg!(ch.len());
+        # [/L/coding/tantivy/src/snippet/mod.rs:353] text.len() = 6146
+        # [/L/coding/tantivy/src/snippet/mod.rs:355] ch.len() = 6140
+        body = body.encode('ascii', 'ignore').decode('ascii')
 
         yield {
             'url'  : url,

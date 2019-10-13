@@ -3,25 +3,54 @@
 const e = React.createElement;
 
 
-// const ENDPOINT = 'https://localhost:3000/api/';
-const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
+const ENDPOINT = 'http://localhost:3000/api/';
+// const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
 
 function handle_body(res) {
     // TODO not sure why it's an array of length 1?
     // const body = res.doc.body[0];
-    let snippet = res.snippet;
+    const snippets = res.snippets;
+
+
     let body = res.doc.body[0];
-    console.log(snippet.highlighted);
+    // console.log(body);
+    // console.log(snippets[0].fragments);
+
+    for (let i = 0; i < body.length; i++) {
+        console.log(i, body[i]);
+    }
+
+    body = snippets[0].fragments; // TODO??
+    console.log(body);
+    console.log(body.length);
+
+
+    let highlighted = [];
+    for (const snippet of snippets) {
+        console.log(snippet.highlighted);
+        for (let [start, stop] of snippet.highlighted) {
+            console.log("%d %d", start, stop);
+            console.log(body.substring(start, stop));
+        }
+        // TODO bodies are all same?
+        highlighted = highlighted.concat(snippet.highlighted);
+    }
+    highlighted.sort((a, b) => a[0] - b[0]);
+
+
+
     let hl = "";
     let cur = 0;
-    for (let [start, stop] of snippet.highlighted) {
+    // console.log(highlighted);
+    for (let [start, stop] of highlighted) {
         hl += body.substring(cur, start);
-        hl += "[";
+        hl += "<span style='color: orange; font-weight: bold;'>";
         hl += body.substring(start, stop);
-        hl += "]";
+        hl += "</span>";
         cur = stop;
     }
     hl += body.substring(stop, body.length);
+    hl = hl.replace(/\n/g, '<br/>');
     return e(
         'div',
         {
@@ -91,7 +120,8 @@ class SearchResults extends React.Component {
                 e('input', {
                     type: 'text',
                     id: 'query',
-                    value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
+                    // value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
+                    value: '"Add Chicken Soup"',
                 }),
                 e('div', {key: 'results'}, children),
             ]
