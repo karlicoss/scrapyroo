@@ -88,12 +88,18 @@ def index_cli(path: Path, purge: bool=False):
             check_call(['tantivy', 'index', '-i', 'scrapyroo-index'], stdin=fo)
 
 def iter_menus(from_):
+    processed = {}
     for line in from_:
         j = json.loads(line)
 
         rest = j['restaurant']
         menu = j['menu']['items']
         url = j['urls']['current']
+        # TODO not sure why there were multiple results in some queries
+        if url in processed:
+            print(f"WARNING: multiple scraped results for {url}")
+            continue
+        processed[url] = j
 
         name = rest['name']
         desc = rest['description']
