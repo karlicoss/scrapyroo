@@ -66,6 +66,10 @@ a:active {
     vertical-align: top;
 }
 
+td.price {
+    width: 5ch;
+}
+
 a.back {
     display: block; /* TODO not sur if it's a good way */
 }

@@ -59,10 +59,16 @@ function handle_body(that, res) {
     // TODO FIXME weird, snippets 
     // TODO write about that?
 
-    const lines = hl.split('\n');
-    if (that.state.sort) {
-        lines.sort((a, b) => b.includes('<span') - a.includes('<span')); // TODO meh..
+    const split = hl.split('\n');
+    let matched = [];
+    let unmatched = [];
+    for (const line of split) {
+        (line.includes('<span') ? matched : unmatched).push(line);
     }
+    if (!that.state.show_unmatched) {
+        unmatched = [];
+    }
+    const lines = that.state.sort ? (matched.concat(unmatched)) : split;
 
     const table = e('table', {
         key: 'tbl',
@@ -72,7 +78,7 @@ function handle_body(that, res) {
         return e('tr', {
             key: `row${idx}`,
         }, [
-            e('td', {key: 'price'}, price),
+            e('td', {key: 'price', className: 'price'}, price),
             e('td', {
                 key: 'item',
                 dangerouslySetInnerHTML: {__html: name + "<br>" + text},
@@ -96,6 +102,7 @@ class SearchResults extends React.Component {
             results: [],
             debug: false,
             sort: true,
+            show_unmwatched: false,
         };
     }
 
@@ -160,7 +167,14 @@ class SearchResults extends React.Component {
                   onChange: (e) => { this.setState({sort: e.target.checked});},
               }),
               "Show matched menu items first",
-              e('br')
+              e('br'),
+              e('input', {
+                  type: 'checkbox',
+                  key: 'unmatched-checkbox',
+                  checked: this.state.show_unmatched,
+                  onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
+              }),
+              "Show unmatched menu items",
             ),
             e('form', {
                 key: 'search-form',
