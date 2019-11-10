@@ -74,6 +74,7 @@ a.back {
     display: block; /* TODO not sur if it's a good way */
 }
 
+
 .snippet {
     font-weight: bold;
     color: magenta;
@@ -93,3 +94,7 @@ a.back {
 .snippet_11 { color: brown }
 .snippet_12 { color: orange }
 .snippet_13 { color: red    }
+
+.snippet.nodebug {
+    color: transparent;
+}

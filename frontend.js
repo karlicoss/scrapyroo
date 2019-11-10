@@ -48,10 +48,9 @@ function handle_body(that, res) {
         hl += `<span class='highlight'>`;
         hl += body.substring(start, stop);
         hl += "</span>";
-        if (that.state.debug) {
-            // TODO mm, maybe make them invisible or something
-            hl += `<sup class='snippet snippet_${si}'>${si}</sup>`;
-        }
+        const dbgcls = that.state.debug ? 'debug' : 'nodebug';
+        // TODO mm, maybe make them invisible or something
+        hl += `<sup class='snippet snippet_${si} ${dbgcls}'>${si}</sup>`;
         cur = stop;
     }
     hl += body.substring(stop, body.length);
