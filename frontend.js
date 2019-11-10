@@ -66,11 +66,11 @@ function handle_body(that, res) {
 
     const table = e('table', {
         key: 'tbl',
-        class: 'menu',
-    }, e('tbody', {}, lines.map(l => {
+        className: 'menu',
+    }, e('tbody', {}, lines.map((l, idx) => {
         const [price, name, text] = l.split('\t'); // TODO careful
-        return e('tr', { // TODO FIXME non unique key
-            key: 'row'
+        return e('tr', {
+            key: `row${idx}`,
         }, [
             e('td', {key: 'price'}, price),
             e('td', {
@@ -81,27 +81,6 @@ function handle_body(that, res) {
     })));
 
     return table;
-    // const html = lines.join('<br/>');
-    // return e(
-    //     'div',
-    //     {
-    //         dangerouslySetInnerHTML: {__html: html},
-    //     }
-    // );
-    // return body.split('\n').map((item, key) => {
-        // TODO what's up with non unique key???
-        // console.log(key);
-    //     return e(
-    //         'span',
-    //         {
-    //             key: key,
-    //             dangerouslySetInnerHTML: {'__html': 'hi'},
-    //         },
-    //         [
-    //             e('br'),
-    //         ],
-    //     );
-    // });
 }
 
 function uuid(res) {
@@ -137,7 +116,7 @@ class SearchResults extends React.Component {
         const toc = e('div', {
             key: 'toc',
             id: 'toc',
-        }, e('div', {}, "Restaurants:"), e('ul', {}, toc_elems));
+        }, "Restaurants:", e('ul', {key: 'toc-list'}, toc_elems));
         const children = this.state.results.map(
             res => e('div', {
                 key: res.doc.url[0],
@@ -151,7 +130,7 @@ class SearchResults extends React.Component {
                     // TODO actually don't really need it?
                     // e('a', {key: 'back', href: '#toc', className: 'back'}, 'back '), // TODO arrow up
                     // TODO 'next' button for quick jumping?
-                    e('div', {}, `score: ${res.score.toFixed(2)} `),
+                    e('div', {key: 'score'}, `score: ${res.score.toFixed(2)} `),
                     e('a', {
                         key: 'link',
                         href: "https://deliveroo.co.uk" + res.doc.url[0],
@@ -161,28 +140,27 @@ class SearchResults extends React.Component {
                     key: 'body',
                     className: 'body',
                 }, handle_body(this, res)),
-                // TODO FIXME would be nice to reorder highlighted stuff?
             ]
         ));
         return e('div', {
         }, [
-            e('div', {},
+            e('div', {key: 'settings-debug'},
               e('input', {
                   type: 'checkbox',
                   key: 'debug-checkbox',
                   checked: this.state.debug,
                   onChange: (e) => { this.setState({debug: e.target.checked});},
                 }),
-              e('label', {}, "Debug"),
+              "Debug",
              ),
-            e('div', {},
+            e('div', {key: 'settings-sort'},
               e('input', {
                   type: 'checkbox',
                   key: 'sort-checkbox',
                   checked: this.state.sort,
                   onChange: (e) => { this.setState({sort: e.target.checked});},
               }),
-              e('label', {}, "Show matched menu items first"),
+              "Show matched menu items first",
              ),
             e('form', {
                 key: 'search-form',
