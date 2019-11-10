@@ -102,8 +102,16 @@ def iter_menus(from_):
         # TODO address?
         # TODO maybe just store the whole thing?
 
-        body = desc or ''
+        body = [
+            desc or '',
+        ]
+        raw = []
 
+        # TODO could explain how I'm compensating for lack of hierarchical search?
+        # TODO not sure if need some sentinels?
+
+        # TODO can we keep this in index??
+        # TODO serialize
         for m in menu:
             iname = m['name']
             idesc = m['description'] or ''
@@ -111,8 +119,13 @@ def iter_menus(from_):
             pound, pence = divmod(price, 1)
             ps = f'{price:.0f}' if pence < 0.1 else f'{price:.1f}'
 
+            raw.append({
+                'name' : iname,
+                'price': ps,
+                'description': idesc,
+            })
             # TODO use positions to highlight?
-            body += iname + ' ' + ps + ' ' + idesc + '\n'
+            body.append(iname + ' ' + idesc)
 
         # TODO FIXME issue in cocotte
         # https://repl.it/languages/rust
@@ -126,12 +139,18 @@ def iter_menus(from_):
         #         dbg!(ch.len());
         # [/L/coding/tantivy/src/snippet/mod.rs:353] text.len() = 6146
         # [/L/coding/tantivy/src/snippet/mod.rs:355] ch.len() = 6140
-        body = body.encode('ascii', 'ignore').decode('ascii')
+        bodys = '\n'.join(body)
+        bodys = bodys.encode('ascii', 'ignore').decode('ascii')
+
+        # TODO FIXME eh. how to correlate price back?..
+        # TODO maybe, include some markers??
+        raws = json.dumps(raw)
 
         yield {
             'url'  : url,
             'title': name or '',
-            'body' : body,
+            'body' : bodys,
+            'raw'  : raws,
         }
 
 if __name__ == '__main__':

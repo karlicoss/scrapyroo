@@ -75,9 +75,7 @@ function handle_body(res) {
 
 function uuid(res) {
     const url = res.doc.url[0];
-    console.log(url);
     const uuid = url.replace(/\//g, '_');
-    console.log(uuid);
     return uuid;
 }
 
@@ -160,17 +158,7 @@ class SearchResults extends React.Component {
                     key: 'query',
                     type: 'text',
                     id: 'query',
-                        // value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
-                        // value: '"Add Chicken Soup"',
                 }),
-            // e(
-            //     'button',
-            //     {
-            //         key: 'search',
-            //         onClick: () => {
-            //         }},
-            //     'Search'
-            // ),
             ]),
             toc,
             e('ul' , {key: 'results'}, children),
@@ -179,7 +167,9 @@ class SearchResults extends React.Component {
 
     componentDidMount () {
         // TODO not sure if need some extra callback..
-        document.querySelector('#query').focus();
+        const query = document.querySelector('#query');
+        query.value = 'duck';
+        query.focus();
     }
 }
 
