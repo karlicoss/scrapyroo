@@ -144,7 +144,7 @@ class SearchResults extends React.Component {
         ));
         return e('div', {
         }, [
-            e('div', {key: 'settings-debug'},
+            e('div', {key: 'settings', id: 'settings'},
               e('input', {
                   type: 'checkbox',
                   key: 'debug-checkbox',
@@ -152,8 +152,7 @@ class SearchResults extends React.Component {
                   onChange: (e) => { this.setState({debug: e.target.checked});},
                 }),
               "Debug",
-             ),
-            e('div', {key: 'settings-sort'},
+              e('br'),
               e('input', {
                   type: 'checkbox',
                   key: 'sort-checkbox',
@@ -161,7 +160,8 @@ class SearchResults extends React.Component {
                   onChange: (e) => { this.setState({sort: e.target.checked});},
               }),
               "Show matched menu items first",
-             ),
+              e('br')
+            ),
             e('form', {
                 key: 'search-form',
                 onSubmit: (e) => {
@@ -184,15 +184,15 @@ class SearchResults extends React.Component {
                     e.preventDefault();
                 }
             }, [
-                e('button', {
-                    key: 'submit',
-                    type: 'submit',
-                }, 'Search'),
                 e('input', {
                     key: 'query',
                     type: 'text',
                     id: 'query',
                 }),
+                e('button', {
+                    key: 'submit',
+                    type: 'submit',
+                }, 'Search'),
             ]),
             toc,
             e('ul' , {key: 'results', id: 'results'}, children),

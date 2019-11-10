@@ -52,6 +52,12 @@ a:active {
     left: 52%;
 }
 
+#settings {
+    position: fixed;
+    left: 52%;
+    bottom: 5%;
+}
+
 #results {
     padding-left: 0;
 }
