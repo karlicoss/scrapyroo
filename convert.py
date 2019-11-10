@@ -102,7 +102,7 @@ def iter_menus(from_):
         # TODO address?
         # TODO maybe just store the whole thing?
 
-        body = [
+        bodies = [
             # desc or '', # TODO note sure if I really need it
         ]
         raw = []
@@ -125,7 +125,7 @@ def iter_menus(from_):
                 'description': idesc,
             })
             # TODO use positions to highlight?
-            body.append(ps + '\t' + iname + '\t' + idesc)
+            bodies.append(ps + '\t' + iname + '\t' + idesc)
 
         # TODO FIXME issue in cocotte
         # https://repl.it/languages/rust
@@ -139,8 +139,9 @@ def iter_menus(from_):
         #         dbg!(ch.len());
         # [/L/coding/tantivy/src/snippet/mod.rs:353] text.len() = 6146
         # [/L/coding/tantivy/src/snippet/mod.rs:355] ch.len() = 6140
-        bodys = '\n'.join(body)
-        bodys = bodys.encode('ascii', 'ignore').decode('ascii')
+        deunicode = lambda s: s.encode('ascii', 'ignore').decode('ascii')
+        bodies = [deunicode(s) for s in bodies]
+        bodys = '\n'.join(bodies)
 
         # TODO FIXME eh. how to correlate price back?..
         # TODO maybe, include some markers??
