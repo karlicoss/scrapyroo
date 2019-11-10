@@ -41,6 +41,10 @@ a:active {
     width: 80ch;
 }
 
+.menu td {
+    vertical-align: top;
+}
+
 .snippet {
     font-weight: bold;
     color: magenta;

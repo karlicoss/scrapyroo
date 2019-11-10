@@ -103,7 +103,7 @@ def iter_menus(from_):
         # TODO maybe just store the whole thing?
 
         body = [
-            desc or '',
+            # desc or '', # TODO note sure if I really need it
         ]
         raw = []
 
@@ -125,7 +125,7 @@ def iter_menus(from_):
                 'description': idesc,
             })
             # TODO use positions to highlight?
-            body.append(ps + ' ' + iname + ' ' + idesc)
+            body.append(ps + '\t' + iname + '\t' + idesc)
 
         # TODO FIXME issue in cocotte
         # https://repl.it/languages/rust

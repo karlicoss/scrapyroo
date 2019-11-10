@@ -66,16 +66,16 @@ function handle_body(that, res) {
 
     const table = e('table', {
         key: 'tbl',
+        class: 'menu',
     }, lines.map(l => {
-        const [price] = l.split(' ', 1); // TODO careful
-        const text = l.substring(price.length + 1);
+        const [price, name, text] = l.split('\t'); // TODO careful
         return e('tr', { // TODO FIXME non unique key
             key: 'row'
         }, [
             e('td', {key: 'price'}, price),
             e('td', {
                 key: 'item',
-                dangerouslySetInnerHTML: {__html: text},
+                dangerouslySetInnerHTML: {__html: name + "<br>" + text},
             }),
        ]);
     }));
