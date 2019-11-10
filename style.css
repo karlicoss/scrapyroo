@@ -58,6 +58,10 @@ a:active {
     bottom: 5%;
 }
 
+#error {
+    height: 2em;
+}
+
 #results {
     padding-left: 0;
 }

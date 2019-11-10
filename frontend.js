@@ -103,6 +103,7 @@ class SearchResults extends React.Component {
         super(props);
         this.state = {
             results: [],
+            error: '',
             debug: false,
             sort: true,
             show_unmwatched: false,
@@ -152,6 +153,9 @@ class SearchResults extends React.Component {
                 }, handle_body(this, res)),
             ]
         ));
+
+        const error_c = this.state.error;
+
         return e('div', {
         }, [
             e('div', {key: 'settings', id: 'settings'},
@@ -178,6 +182,13 @@ class SearchResults extends React.Component {
                   onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
               }),
               "Show unmatched menu items",
+              e('br'),
+              e('input', {
+                  type: 'checkbox',
+                  key: 'incremental-checkbox',
+                  checked: this.state.incremental,
+                  onChange: (e) => { this.setState({incremental: e.target.checked});},
+              }),
             ),
             e('form', {
                 key: 'search-form',
@@ -187,7 +198,11 @@ class SearchResults extends React.Component {
                     const qq = document.querySelector('#query');
                     const q = qq.value;
 
-                    reqwest({url: `${ENDPOINT}?q=${q}&nhits=20`,  contentType: 'application/json', method: 'GET'}).then(res => {
+                    reqwest({
+                        url: `${ENDPOINT}?q=${q}&nhits=20`,
+                        contentType: 'application/json',
+                        method: 'GET',
+                    }).then(res => {
                         console.log(res);
                         // TODO eh? e.g. query duck, it results in multiple documents with same id??
                         // TODO what does id even mean here??
@@ -195,7 +210,11 @@ class SearchResults extends React.Component {
 
                         // TODO show rating?
 
-                        this.setState({ results: res.hits });
+                        this.setState({results: res.hits, error: '' });
+                    }, (err, msg) => {
+                        console.error(err);
+                        console.error(msg);
+                        this.setState({error: `${err.status} ${err.statusText} ${msg}`});
                     });
 
                     e.preventDefault();
@@ -212,6 +231,7 @@ class SearchResults extends React.Component {
                 }, 'Search'),
             ]),
             toc,
+            e('div', {key: 'error'  , id: 'error', className: 'error'}, error_c),
             e('ul' , {key: 'results', id: 'results'}, children),
         ]);
     }
