@@ -67,7 +67,7 @@ function handle_body(that, res) {
     const table = e('table', {
         key: 'tbl',
         class: 'menu',
-    }, lines.map(l => {
+    }, e('tbody', {}, lines.map(l => {
         const [price, name, text] = l.split('\t'); // TODO careful
         return e('tr', { // TODO FIXME non unique key
             key: 'row'
@@ -78,7 +78,7 @@ function handle_body(that, res) {
                 dangerouslySetInnerHTML: {__html: name + "<br>" + text},
             }),
        ]);
-    }));
+    })));
 
     return table;
     // const html = lines.join('<br/>');
@@ -134,10 +134,10 @@ class SearchResults extends React.Component {
                 }, `${res.doc.title}`),
             ]),
         );
-        const toc = e('ul', {
+        const toc = e('div', {
             key: 'toc',
             id: 'toc',
-        }, toc_elems);
+        }, e('div', {}, "Restaurants:"), e('ul', {}, toc_elems));
         const children = this.state.results.map(
             res => e('div', {
                 key: res.doc.url[0],
@@ -148,9 +148,10 @@ class SearchResults extends React.Component {
                     className: 'heading',
                     id: uuid(res),
                 }, [
-                    e('a', {key: 'back', href: '#toc'}, 'back '), // TODO arrow up
+                    // TODO actually don't really need it?
+                    // e('a', {key: 'back', href: '#toc', className: 'back'}, 'back '), // TODO arrow up
                     // TODO 'next' button for quick jumping?
-                    `score: ${res.score.toFixed(2)} `,
+                    e('div', {}, `score: ${res.score.toFixed(2)} `),
                     e('a', {
                         key: 'link',
                         href: "https://deliveroo.co.uk" + res.doc.url[0],
@@ -216,7 +217,7 @@ class SearchResults extends React.Component {
                 }),
             ]),
             toc,
-            e('ul' , {key: 'results'}, children),
+            e('ul' , {key: 'results', id: 'results'}, children),
         ]);
     }
 

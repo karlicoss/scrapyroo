@@ -1,6 +1,12 @@
 html {
     /* font-family: "Source Serif Pro", serif; */
     font-family: "Source Sans Pro", serif-sans;
+    font-size: 120%;
+}
+
+body {
+    max-width: 50%;
+    border-right: 1px dotted;
 }
 
 h1 {
@@ -41,8 +47,21 @@ a:active {
     width: 80ch;
 }
 
+#toc {
+    position: fixed;
+    left: 52%;
+}
+
+#results {
+    padding-left: 0;
+}
+
 .menu td {
     vertical-align: top;
+}
+
+a.back {
+    display: block; /* TODO not sur if it's a good way */
 }
 
 .snippet {
