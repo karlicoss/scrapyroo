@@ -26,14 +26,14 @@ function handle_body(res) {
 
 
     let highlighted = [];
+    let sidx = 0;
     for (const snippet of snippets) {
         // console.log(snippet.highlighted);
-        for (let [start, stop] of snippet.highlighted) {
-            // console.log("%d %d", start, stop);
-            // console.log(body.substring(start, stop));
-        }
+
+        const hls = snippet.highlighted.map(([start, stop]) => [start, stop, sidx]);
         // TODO bodies are all same?
-        highlighted = highlighted.concat(snippet.highlighted);
+        highlighted = highlighted.concat(hls);
+        sidx++;
     }
     highlighted.sort((a, b) => a[0] - b[0]);
 
@@ -42,25 +42,48 @@ function handle_body(res) {
     let hl = "";
     let cur = 0;
     // console.log(highlighted);
-    for (let [start, stop] of highlighted) {
+    for (let [start, stop, si] of highlighted) {
         hl += body.substring(cur, start);
-        hl += "<span style='color: orange; font-weight: bold;'>";
+
+        hl += `<span class='highlight'>`;
         hl += body.substring(start, stop);
         hl += "</span>";
+        hl += `<sup class='snippet snippet_${si}'>${si}</sup>`;
         cur = stop;
     }
     hl += body.substring(stop, body.length);
+    // console.log("FINISHED!");
+    // TODO FIXME weird, snippets 
+    // TODO write about that?
 
     const lines = hl.split('\n');
+    // TODO make optional?
     lines.sort((a, b) => b.includes('<span') - a.includes('<span')); // TODO meh..
 
-    const html = lines.join('<br/>');
-    return e(
-        'div',
-        {
-            dangerouslySetInnerHTML: {__html: html},
-        }
-    );
+    const table = e('table', {
+        key: 'tbl',
+    }, lines.map(l => {
+        const [price] = l.split(' ', 1); // TODO careful
+        const text = l.substring(price.length + 1);
+        return e('tr', { // TODO FIXME non unique key
+            key: 'row'
+        }, [
+            e('td', {key: 'price'}, price),
+            e('td', {
+                key: 'item',
+                dangerouslySetInnerHTML: {__html: text},
+            }),
+       ]);
+    }));
+
+    return table;
+    // const html = lines.join('<br/>');
+    // return e(
+    //     'div',
+    //     {
+    //         dangerouslySetInnerHTML: {__html: html},
+    //     }
+    // );
     // return body.split('\n').map((item, key) => {
         // TODO what's up with non unique key???
         // console.log(key);
@@ -120,6 +143,7 @@ class SearchResults extends React.Component {
                     id: uuid(res),
                 }, [
                     e('a', {key: 'back', href: '#toc'}, 'back '), // TODO arrow up
+                    // TODO 'next' button for quick jumping?
                     `score: ${res.score.toFixed(2)} `,
                     e('a', {
                         key: 'link',
@@ -173,7 +197,7 @@ class SearchResults extends React.Component {
     componentDidMount () {
         // TODO not sure if need some extra callback..
         const query = document.querySelector('#query');
-        query.value = 'duck';
+        query.value = '"duck soup"';
         query.focus();
     }
 }

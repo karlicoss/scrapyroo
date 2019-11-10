@@ -7,9 +7,6 @@ h1 {
     color: maroon;
     margin-left: 40px;
 }
-.item {
-    color: 'orange';
-}
 .item .heading {
     font-weight: bold;
 }
@@ -18,6 +15,10 @@ h1 {
 }
 
 
+.highlight {
+    color: orange;
+    font-weight: bold;
+}
 
 a:link {
     text-decoration: none;
@@ -34,3 +35,24 @@ a:hover {
 a:active {
     text-decoration: underline;
 }
+
+
+.snippet {
+    font-weight: bold;
+    color: magenta;
+}
+
+.snippet_0  { color: violet }
+.snippet_1  { color: indigo }
+.snippet_2  { color: blue   }
+.snippet_3  { color: green  }
+.snippet_4  { color: brown }
+.snippet_5  { color: orange }
+.snippet_6  { color: red    }
+.snippet_7  { color: violet }
+.snippet_8  { color: indigo }
+.snippet_9  { color: blue   }
+.snippet_10 { color: green  }
+.snippet_11 { color: brown }
+.snippet_12 { color: orange }
+.snippet_13 { color: red    }
