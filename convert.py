@@ -125,7 +125,7 @@ def iter_menus(from_):
                 'description': idesc,
             })
             # TODO use positions to highlight?
-            body.append(iname + ' ' + idesc)
+            body.append(ps + ' ' + iname + ' ' + idesc)
 
         # TODO FIXME issue in cocotte
         # https://repl.it/languages/rust

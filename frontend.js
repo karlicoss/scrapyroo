@@ -50,11 +50,15 @@ function handle_body(res) {
         cur = stop;
     }
     hl += body.substring(stop, body.length);
-    hl = hl.replace(/\n/g, '<br/>');
+
+    const lines = hl.split('\n');
+    lines.sort((a, b) => b.includes('<span') - a.includes('<span')); // TODO meh..
+
+    const html = lines.join('<br/>');
     return e(
         'div',
         {
-            dangerouslySetInnerHTML: {__html: hl},
+            dangerouslySetInnerHTML: {__html: html},
         }
     );
     // return body.split('\n').map((item, key) => {
@@ -126,6 +130,7 @@ class SearchResults extends React.Component {
                     key: 'body',
                     className: 'body',
                 }, handle_body(res)),
+                // TODO FIXME would be nice to reorder highlighted stuff?
             ]
         ));
         return e('div', {
