@@ -73,6 +73,14 @@ function handle_body(res) {
     // });
 }
 
+function uuid(res) {
+    const url = res.doc.url[0];
+    console.log(url);
+    const uuid = url.replace(/\//g, '_');
+    console.log(uuid);
+    return uuid;
+}
+
 class SearchResults extends React.Component {
     constructor(props) {
         super(props);
@@ -84,18 +92,42 @@ class SearchResults extends React.Component {
     // TODO would be nice if snippets had some sort of score as well? e.g. try on "duck soup"
     // TODO duck -- single place on deliveroo that opens at 7PM. really?
     render() {
-        const children = this.state.results.map(res => e(
-            'div',
-            {
+        const toc_elems = this.state.results.map(
+            res => e('li', {
+                key: res.doc.url[0],
+            }, [
+                `${res.score.toFixed(1)} `,
+                e('a', {
+                    key: 'link',
+                    href: `#${uuid(res)}`,
+                }, `${res.doc.title}`),
+            ]),
+        );
+        const toc = e('ul', {
+            key: 'toc',
+            id: 'toc',
+        }, toc_elems);
+        const children = this.state.results.map(
+            res => e('div', {
                 key: res.doc.url[0],
                 className: 'item',
-            },
-            [
-                e('div', {key: 'heading', className: 'heading'}, `score: ${res.score} ${res.doc.title}`),
-                e('div',
-                  {key: 'body'   , className: 'body'   },
-                  handle_body(res),
-                 ),
+            }, [
+                e('div', {
+                    key: 'heading',
+                    className: 'heading',
+                    id: uuid(res),
+                }, [
+                    e('a', {key: 'back', href: '#toc'}, 'back '), // TODO arrow up
+                    `score: ${res.score.toFixed(2)} `,
+                    e('a', {
+                        key: 'link',
+                        href: "https://deliveroo.co.uk" + res.doc.url[0],
+                    }, res.doc.title),
+                ]),
+                e('div', {
+                    key: 'body',
+                    className: 'body',
+                }, handle_body(res)),
             ]
         ));
         return e('div', {
@@ -111,6 +143,8 @@ class SearchResults extends React.Component {
                         // TODO eh? e.g. query duck, it results in multiple documents with same id??
                         // TODO what does id even mean here??
                         // "/menu/london/brick-lane/suito-japanese-platters"
+
+                        // TODO show rating?
 
                         this.setState({ results: res.hits });
                     });
@@ -137,8 +171,9 @@ class SearchResults extends React.Component {
             //         }},
             //     'Search'
             // ),
-            e('div', {key: 'results'}, children),
-            ])
+            ]),
+            toc,
+            e('ul' , {key: 'results'}, children),
         ]);
     }
 
