@@ -74,6 +74,10 @@ a.back {
     display: block; /* TODO not sur if it's a good way */
 }
 
+.error {
+    color: red;
+    font-weight: bold;
+}
 
 .snippet {
     font-weight: bold;

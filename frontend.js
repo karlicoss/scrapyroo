@@ -20,6 +20,10 @@ function handle_body(that, res) {
     //     console.log(i, body[i]);
     // }
 
+    if (snippets.length == 0) {
+        return e('div', {key: 'error', className: 'error'}, "ERROR: empty snippet");
+    }
+
     body = snippets[0].fragments; // TODO??
     // console.log(body);
     // console.log(body.length);
