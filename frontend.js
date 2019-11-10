@@ -25,14 +25,10 @@ function handle_body(that, res) {
     }
 
     body = snippets[0].fragments; // TODO??
-    // console.log(body);
-    // console.log(body.length);
-
 
     let highlighted = [];
     let sidx = 0;
     for (const snippet of snippets) {
-        // console.log(snippet.highlighted);
 
         const hls = snippet.highlighted.map(([start, stop]) => [start, stop, sidx]);
         // TODO bodies are all same?
@@ -45,7 +41,6 @@ function handle_body(that, res) {
 
     let hl = "";
     let cur = 0;
-    // console.log(highlighted);
     for (let [start, stop, si] of highlighted) {
         hl += body.substring(cur, start);
 
@@ -58,7 +53,6 @@ function handle_body(that, res) {
         cur = stop;
     }
     hl += body.substring(stop, body.length);
-    // console.log("FINISHED!");
     // TODO FIXME weird, snippets 
     // TODO write about that?
 
@@ -102,11 +96,13 @@ class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            query: '"duck soup"',
             results: [],
             error: '',
             debug: false,
             sort: true,
             show_unmwatched: false,
+            incremental: true,
         };
     }
 
@@ -156,9 +152,45 @@ class SearchResults extends React.Component {
 
         const error_c = this.state.error;
 
+
+        const that = this;
+        function search() {
+            // TODO !!! validate and do incremental search??
+            // TODO special mode?
+            const qq = document.querySelector('#query');
+            const q = qq.value;
+
+            reqwest({
+                url: `${ENDPOINT}?q=${q}&nhits=20`,
+                contentType: 'application/json',
+                method: 'GET',
+            }).then(res => {
+                // console.log(res);
+                // TODO eh? e.g. query duck, it results in multiple documents with same id??
+                // TODO what does id even mean here??
+                // "/menu/london/brick-lane/suito-japanese-platters"
+
+                // TODO show rating?
+
+                that.setState({results: res.hits, error: '' });
+            }, (err, msg) => {
+                console.error(err);
+                console.error(msg);
+                that.setState({error: `${err.status} ${err.statusText} ${msg}`});
+            });
+        }
+
         return e('div', {
         }, [
             e('div', {key: 'settings', id: 'settings'},
+              e('input', {
+                  type: 'checkbox',
+                  key: 'incremental-checkbox',
+                  checked: this.state.incremental,
+                  onChange: (e) => { this.setState({incremental: e.target.checked});},
+              }),
+              "Search as you type",
+              e('br'),
               e('input', {
                   type: 'checkbox',
                   key: 'debug-checkbox',
@@ -182,41 +214,11 @@ class SearchResults extends React.Component {
                   onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
               }),
               "Show unmatched menu items",
-              e('br'),
-              e('input', {
-                  type: 'checkbox',
-                  key: 'incremental-checkbox',
-                  checked: this.state.incremental,
-                  onChange: (e) => { this.setState({incremental: e.target.checked});},
-              }),
             ),
             e('form', {
                 key: 'search-form',
                 onSubmit: (e) => {
-                    // TODO !!! validate and do incremental search??
-                    // TODO special mode?
-                    const qq = document.querySelector('#query');
-                    const q = qq.value;
-
-                    reqwest({
-                        url: `${ENDPOINT}?q=${q}&nhits=20`,
-                        contentType: 'application/json',
-                        method: 'GET',
-                    }).then(res => {
-                        console.log(res);
-                        // TODO eh? e.g. query duck, it results in multiple documents with same id??
-                        // TODO what does id even mean here??
-                        // "/menu/london/brick-lane/suito-japanese-platters"
-
-                        // TODO show rating?
-
-                        this.setState({results: res.hits, error: '' });
-                    }, (err, msg) => {
-                        console.error(err);
-                        console.error(msg);
-                        this.setState({error: `${err.status} ${err.statusText} ${msg}`});
-                    });
-
+                    search();
                     e.preventDefault();
                 }
             }, [
@@ -224,6 +226,13 @@ class SearchResults extends React.Component {
                     key: 'query',
                     type: 'text',
                     id: 'query',
+                    value: this.state.query,
+                    onChange: (event) => {
+                        this.setState({query: event.target.value});
+                        if (this.state.incremental) {
+                            search();
+                        }
+                    },
                 }),
                 e('button', {
                     key: 'submit',
