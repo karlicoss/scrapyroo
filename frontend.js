@@ -16,21 +16,21 @@ function handle_body(res) {
     // console.log(body);
     // console.log(snippets[0].fragments);
 
-    for (let i = 0; i < body.length; i++) {
-        console.log(i, body[i]);
-    }
+    // for (let i = 0; i < body.length; i++) {
+    //     console.log(i, body[i]);
+    // }
 
     body = snippets[0].fragments; // TODO??
-    console.log(body);
-    console.log(body.length);
+    // console.log(body);
+    // console.log(body.length);
 
 
     let highlighted = [];
     for (const snippet of snippets) {
-        console.log(snippet.highlighted);
+        // console.log(snippet.highlighted);
         for (let [start, stop] of snippet.highlighted) {
-            console.log("%d %d", start, stop);
-            console.log(body.substring(start, stop));
+            // console.log("%d %d", start, stop);
+            // console.log(body.substring(start, stop));
         }
         // TODO bodies are all same?
         highlighted = highlighted.concat(snippet.highlighted);
@@ -81,12 +81,13 @@ class SearchResults extends React.Component {
         };
     }
 
-    // TODO FIXME children with the same key?
+    // TODO would be nice if snippets had some sort of score as well? e.g. try on "duck soup"
+    // TODO duck -- single place on deliveroo that opens at 7PM. really?
     render() {
         const children = this.state.results.map(res => e(
             'div',
             {
-                key: res.id,
+                key: res.doc.url[0],
                 className: 'item',
             },
             [
@@ -97,35 +98,53 @@ class SearchResults extends React.Component {
                  ),
             ]
         ));
-        return e(
-            'div',
-            {},
-            [
-                e(
-                    'button',
-                    {
-                        key: 'search',
-                        onClick: () => {
-                            const qq = document.querySelector('#query');
-                            const q = qq.value;
+        return e('div', {
+        }, [
+            e('form', {
+                key: 'search-form',
+                onSubmit: (e) => {
+                    const qq = document.querySelector('#query');
+                    const q = qq.value;
 
-                            reqwest({url: `${ENDPOINT}?q=${q}&nhits=20`,  contentType: 'application/json', method: 'GET'}).then(res => {
-                                console.log(res);
+                    reqwest({url: `${ENDPOINT}?q=${q}&nhits=20`,  contentType: 'application/json', method: 'GET'}).then(res => {
+                        console.log(res);
+                        // TODO eh? e.g. query duck, it results in multiple documents with same id??
+                        // TODO what does id even mean here??
+                        // "/menu/london/brick-lane/suito-japanese-platters"
 
-                                this.setState({ results: res.hits });
-                            });
-                        }},
-                    'Search'
-                ),
+                        this.setState({ results: res.hits });
+                    });
+
+                    e.preventDefault();
+                }
+            }, [
+                e('button', {
+                    key: 'submit',
+                    type: 'submit',
+                }, 'Search'),
                 e('input', {
+                    key: 'query',
                     type: 'text',
                     id: 'query',
-                    // value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
-                    value: '"Add Chicken Soup"',
+                        // value: 'chicken AND soup AND -noodle', // TODO FIXME doesn't work
+                        // value: '"Add Chicken Soup"',
                 }),
-                e('div', {key: 'results'}, children),
-            ]
-        );
+            // e(
+            //     'button',
+            //     {
+            //         key: 'search',
+            //         onClick: () => {
+            //         }},
+            //     'Search'
+            // ),
+            e('div', {key: 'results'}, children),
+            ])
+        ]);
+    }
+
+    componentDidMount () {
+        // TODO not sure if need some extra callback..
+        document.querySelector('#query').focus();
     }
 }
 

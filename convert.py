@@ -9,6 +9,20 @@ import tempfile
 
 import argparse
 
+
+# TODO odd, with scrapyroo-index-2 it doesn't work quite well
+"""
+cargo run serve --index /L/coding/scrapyroo/scrapyroo-index-2 2>&1 | tee log
+    Finished dev [unoptimized + debuginfo] target(s) in 0.11s
+     Running `target/debug/tantivy serve --index /L/coding/scrapyroo/scrapyroo-index-2`
+thread 'main' panicked at 'attempt to shift left with overflow', /L/coding/tantivy/src/common/vint.rs:152:31
+note: Run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+"""
+
+# that works fine though..
+# cargo run serve --index /L/coding/scrapyroo/scrapyroo-index 2>&1 | tee log
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('input', type=Path)
@@ -19,7 +33,7 @@ def main():
     # indexer = index_py
     indexer = index_cli
 
-    ipath = Path('scrapyroo-index') # TODO FIXME
+    # ipath = Path('scrapyroo-index-2') # TODO FIXME
     if args.purge_index:
         check_call(['scrapyroo-index/clean'])
         # shutil.rmtree(str(ipath))
@@ -106,6 +120,7 @@ def iter_menus(from_):
         #     import ipdb; ipdb.set_trace() 
         #     pass
 
+        # TODO post about it?
         # dbg!(text.len());
         #         let ch: Vec<char> = text.chars().collect();
         #         dbg!(ch.len());
