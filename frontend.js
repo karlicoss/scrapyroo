@@ -6,7 +6,7 @@ const e = React.createElement;
 const ENDPOINT = 'http://localhost:3000/api/';
 // const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
 
-function handle_body(res) {
+function handle_body(that, res) {
     // TODO not sure why it's an array of length 1?
     // const body = res.doc.body[0];
     const snippets = res.snippets;
@@ -48,7 +48,10 @@ function handle_body(res) {
         hl += `<span class='highlight'>`;
         hl += body.substring(start, stop);
         hl += "</span>";
-        hl += `<sup class='snippet snippet_${si}'>${si}</sup>`;
+        if (that.state.debug) {
+            // TODO mm, maybe make them invisible or something
+            hl += `<sup class='snippet snippet_${si}'>${si}</sup>`;
+        }
         cur = stop;
     }
     hl += body.substring(stop, body.length);
@@ -57,8 +60,9 @@ function handle_body(res) {
     // TODO write about that?
 
     const lines = hl.split('\n');
-    // TODO make optional?
-    lines.sort((a, b) => b.includes('<span') - a.includes('<span')); // TODO meh..
+    if (that.state.sort) {
+        lines.sort((a, b) => b.includes('<span') - a.includes('<span')); // TODO meh..
+    }
 
     const table = e('table', {
         key: 'tbl',
@@ -111,6 +115,8 @@ class SearchResults extends React.Component {
         super(props);
         this.state = {
             results: [],
+            debug: false,
+            sort: true,
         };
     }
 
@@ -153,15 +159,35 @@ class SearchResults extends React.Component {
                 e('div', {
                     key: 'body',
                     className: 'body',
-                }, handle_body(res)),
+                }, handle_body(this, res)),
                 // TODO FIXME would be nice to reorder highlighted stuff?
             ]
         ));
         return e('div', {
         }, [
+            e('div', {},
+              e('input', {
+                  type: 'checkbox',
+                  key: 'debug-checkbox',
+                  checked: this.state.debug,
+                  onChange: (e) => { this.setState({debug: e.target.checked});},
+                }),
+              e('label', {}, "Debug"),
+             ),
+            e('div', {},
+              e('input', {
+                  type: 'checkbox',
+                  key: 'sort-checkbox',
+                  checked: this.state.sort,
+                  onChange: (e) => { this.setState({sort: e.target.checked});},
+              }),
+              e('label', {}, "Show matched menu items first"),
+             ),
             e('form', {
                 key: 'search-form',
                 onSubmit: (e) => {
+                    // TODO !!! validate and do incremental search??
+                    // TODO special mode?
                     const qq = document.querySelector('#query');
                     const q = qq.value;
 

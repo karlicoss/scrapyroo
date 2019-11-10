@@ -37,6 +37,10 @@ a:active {
 }
 
 
+#query {
+    width: 80ch;
+}
+
 .snippet {
     font-weight: bold;
     color: magenta;
