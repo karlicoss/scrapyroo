@@ -9,6 +9,7 @@ html {
     --toc-left : 52%;
     --toc-right: none;
     --body-width: 50%;
+    --sidebar-width: none;
 }
 
 @media (max-width: 80rem) {
@@ -18,7 +19,8 @@ html {
     :root {
         --toc-left: none;
         --toc-right: 0%;
-        --body-width: none;
+        --body-width: 72%;
+        --sidebar-width: 25%;
     }
 }
 
@@ -32,21 +34,30 @@ body {
 #sidebar {
     display: flex;
     flex-direction: column;
-    height: 95%; /* TODO meh */
+    height: 100%; /* TODO meh */
 
     position: fixed;
 
     left : var(--toc-left);
     right: var(--toc-right);
+    /* width: 20%; */
 
     font-size: 1.1em;
+
+    border-left: 1px dashed;
+    margin-top: 3em;
+    padding-left: 1em;
+
+    width: var(--sidebar-width);
 }
 
 #toc {
     flex-grow: 1;
-    padding-top: 3em;
 }
 
+#controls {
+    margin-bottom: 4em; /* meh */
+}
 
 h1 {
     color: maroon;

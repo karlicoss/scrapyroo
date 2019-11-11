@@ -151,36 +151,40 @@ class SearchResults extends React.Component {
                 }, handle_body(this, res)),
             ]
         ));
+        const controls = e(
+            'div', {key: 'controls', id: 'controls'},
+            e('div', {}, e('input', {
+                type: 'checkbox',
+                key: 'incremental-checkbox',
+                checked: this.state.incremental,
+                onChange: (e) => { this.setState({incremental: e.target.checked});},
+            }), "Search as you type"),
+            e('div', {}, e('input', {
+                type: 'checkbox',
+                key: 'debug-checkbox',
+                id: 'debug-checkbox',
+                checked: this.state.debug,
+                onChange: (e) => { this.setState({debug: e.target.checked});},
+            }), "Debug"),
+            e('div', {}, e('input', {
+                type: 'checkbox',
+                key: 'sort-checkbox',
+                checked: this.state.sort,
+                onChange: (e) => { this.setState({sort: e.target.checked});},
+            }), "Show matched menu items first"),
+            e('div', {}, e('input', {
+                type: 'checkbox',
+                key: 'unmatched-checkbox',
+                checked: this.state.show_unmatched,
+                onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
+            }), "Show unmatched menu items"),
+        );
 
         const error_c = this.state.error;
         return e('div', {}, [
             e('div', {key: 'settings', id: 'sidebar'},
               toc,
-              e('div', {}, e('input', {
-                  type: 'checkbox',
-                  key: 'incremental-checkbox',
-                  checked: this.state.incremental,
-                  onChange: (e) => { this.setState({incremental: e.target.checked});},
-              }), "Search as you type"),
-              e('div', {}, e('input', {
-                  type: 'checkbox',
-                  key: 'debug-checkbox',
-                  id: 'debug-checkbox',
-                  checked: this.state.debug,
-                  onChange: (e) => { this.setState({debug: e.target.checked});},
-              }), "Debug"),
-              e('div', {}, e('input', {
-                  type: 'checkbox',
-                  key: 'sort-checkbox',
-                  checked: this.state.sort,
-                  onChange: (e) => { this.setState({sort: e.target.checked});},
-              }), "Show matched menu items first"),
-              e('div', {}, e('input', {
-                  type: 'checkbox',
-                  key: 'unmatched-checkbox',
-                  checked: this.state.show_unmatched,
-                  onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
-              }), "Show unmatched menu items"),
+              controls,
              ),
             e('form', {
                  key: 'search-form',
