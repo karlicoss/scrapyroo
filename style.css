@@ -108,6 +108,7 @@ a:active {
 
 td.price {
     width: 5ch;
+    text-align: right;
 }
 
 a.back {

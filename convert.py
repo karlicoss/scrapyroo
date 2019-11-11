@@ -122,8 +122,8 @@ def iter_menus(from_):
             iname = m['name']
             idesc = m['description'] or ''
             price = m['raw_price']
-            pound, pence = divmod(price, 1)
-            ps = f'{price:.0f}' if pence < 0.1 else f'{price:.1f}'
+            # pound, pence = divmod(price, 1)
+            ps = f'{price:.2f}'
 
             # TODO meh.
             (ps, iname, idesc) = map(lambda s: s.replace('\t', ''), (ps, iname, idesc))
