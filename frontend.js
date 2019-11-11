@@ -75,7 +75,7 @@ function handle_body(that, res) {
         return e('tr', {
             key: `row${idx}`,
         }, [
-            e('td', {key: 'price', className: 'price'}, price),
+            e('td', {key: 'price', className: 'price'}, `£${price}`),
             e('td', {
                 key: 'item',
                 dangerouslySetInnerHTML: {__html: name + "<br>" + text},
@@ -96,7 +96,7 @@ class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            query: '"duck soup"',
+            query: 'fish and salad and -"fish cake"',
             results: [],
             error: '',
             debug: false,
@@ -180,8 +180,7 @@ class SearchResults extends React.Component {
             });
         }
 
-        return e('div', {
-        }, [
+        return e('div', {}, [
             e('div', {key: 'settings', id: 'settings'},
               e('input', {
                   type: 'checkbox',
@@ -213,32 +212,36 @@ class SearchResults extends React.Component {
                   checked: this.state.show_unmatched,
                   onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
               }),
-              "Show unmatched menu items",
-            ),
+              "Show unmatched menu items"
+             ),
             e('form', {
-                key: 'search-form',
-                onSubmit: (e) => {
-                    search();
-                    e.preventDefault();
-                }
+                 key: 'search-form',
+                 onSubmit: (e) => {
+                     search();
+                     e.preventDefault();
+                 }
+            }, e('div', {
+                key: 'search-form-container',
+                id: 'search-line'
             }, [
                 e('input', {
-                    key: 'query',
-                    type: 'text',
-                    id: 'query',
-                    value: this.state.query,
-                    onChange: (event) => {
-                        this.setState({query: event.target.value});
-                        if (this.state.incremental) {
-                            search();
-                        }
-                    },
-                }),
+                     key: 'query',
+                     type: 'text',
+                     id: 'query',
+                     value: this.state.query,
+                     onChange: (event) => {
+                         this.setState({query: event.target.value});
+                         if (this.state.incremental) {
+                             search();
+                         }
+                     },
+                 }),
                 e('button', {
                     key: 'submit',
+                    id: 'search',
                     type: 'submit',
                 }, 'Search'),
-            ]),
+            ])),
             toc,
             e('div', {key: 'error'  , id: 'error', className: 'error'}, error_c),
             e('ul' , {key: 'results', id: 'results'}, children),
@@ -248,7 +251,6 @@ class SearchResults extends React.Component {
     componentDidMount () {
         // TODO not sure if need some extra callback..
         const query = document.querySelector('#query');
-        query.value = '"duck soup"';
         query.focus();
     }
 }
