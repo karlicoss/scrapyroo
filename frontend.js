@@ -181,38 +181,33 @@ class SearchResults extends React.Component {
         }
 
         return e('div', {}, [
-            e('div', {key: 'settings', id: 'settings'},
-              e('input', {
+            e('div', {key: 'settings', id: 'sidebar'},
+              toc,
+              e('div', {}, e('input', {
                   type: 'checkbox',
                   key: 'incremental-checkbox',
                   checked: this.state.incremental,
                   onChange: (e) => { this.setState({incremental: e.target.checked});},
-              }),
-              "Search as you type",
-              e('br'),
-              e('input', {
+              }), "Search as you type"),
+              e('div', {}, e('input', {
                   type: 'checkbox',
                   key: 'debug-checkbox',
+                  id: 'debug-checkbox',
                   checked: this.state.debug,
                   onChange: (e) => { this.setState({debug: e.target.checked});},
-                }),
-              "Debug",
-              e('br'),
-              e('input', {
+              }), "Debug"),
+              e('div', {}, e('input', {
                   type: 'checkbox',
                   key: 'sort-checkbox',
                   checked: this.state.sort,
                   onChange: (e) => { this.setState({sort: e.target.checked});},
-              }),
-              "Show matched menu items first",
-              e('br'),
-              e('input', {
+              }), "Show matched menu items first"),
+              e('div', {}, e('input', {
                   type: 'checkbox',
                   key: 'unmatched-checkbox',
                   checked: this.state.show_unmatched,
                   onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
-              }),
-              "Show unmatched menu items"
+              }), "Show unmatched menu items"),
              ),
             e('form', {
                  key: 'search-form',
@@ -240,9 +235,8 @@ class SearchResults extends React.Component {
                     key: 'submit',
                     id: 'search',
                     type: 'submit',
-                }, 'Search'),
+                }, '🔍'),
             ])),
-            toc,
             e('div', {key: 'error'  , id: 'error', className: 'error'}, error_c),
             e('ul' , {key: 'results', id: 'results'}, children),
         ]);

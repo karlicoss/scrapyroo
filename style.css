@@ -4,10 +4,49 @@ html {
     font-size: 120%;
 }
 
-body {
-    max-width: 50%;
-    border-right: 1px dotted;
+
+:root {
+    --toc-left : 52%;
+    --toc-right: none;
+    --body-width: 50%;
 }
+
+@media (max-width: 80rem) {
+    body {
+        /* color: red; */
+    }
+    :root {
+        --toc-left: none;
+        --toc-right: 0%;
+        --body-width: none;
+    }
+}
+
+
+body {
+    max-width: var(--body-width);
+}
+
+
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 95%; /* TODO meh */
+
+    position: fixed;
+
+    left : var(--toc-left);
+    right: var(--toc-right);
+
+    font-size: 1.1em;
+}
+
+#toc {
+    flex-grow: 1;
+    padding-top: 3em;
+}
+
 
 h1 {
     color: maroon;
@@ -53,17 +92,6 @@ a:active {
 
 #search {
     font-size: 1.5em;
-}
-
-#toc {
-    position: fixed;
-    left: 52%;
-}
-
-#settings {
-    position: fixed;
-    left: 52%;
-    bottom: 5%;
 }
 
 #error {
