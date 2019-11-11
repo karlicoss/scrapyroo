@@ -1,5 +1,7 @@
 'use strict';
 
+function debounce(a,b,c){var d,e;return function(){function h(){d=null,c||(e=a.apply(f,g))}var f=this,g=arguments;return clearTimeout(d),d=setTimeout(h,b),c&&!d&&(e=a.apply(f,g)),e}}
+
 const e = React.createElement;
 
 
@@ -151,35 +153,6 @@ class SearchResults extends React.Component {
         ));
 
         const error_c = this.state.error;
-
-
-        const that = this;
-        function search() {
-            // TODO !!! validate and do incremental search??
-            // TODO special mode?
-            const qq = document.querySelector('#query');
-            const q = qq.value;
-
-            reqwest({
-                url: `${ENDPOINT}?q=${q}&nhits=20`,
-                contentType: 'application/json',
-                method: 'GET',
-            }).then(res => {
-                // console.log(res);
-                // TODO eh? e.g. query duck, it results in multiple documents with same id??
-                // TODO what does id even mean here??
-                // "/menu/london/brick-lane/suito-japanese-platters"
-
-                // TODO show rating?
-
-                that.setState({results: res.hits, error: '' });
-            }, (err, msg) => {
-                console.error(err);
-                console.error(msg);
-                that.setState({error: `${err.status} ${err.statusText} ${msg}`});
-            });
-        }
-
         return e('div', {}, [
             e('div', {key: 'settings', id: 'sidebar'},
               toc,
@@ -212,7 +185,7 @@ class SearchResults extends React.Component {
             e('form', {
                  key: 'search-form',
                  onSubmit: (e) => {
-                     search();
+                     this.search();
                      e.preventDefault();
                  }
             }, e('div', {
@@ -227,7 +200,7 @@ class SearchResults extends React.Component {
                      onChange: (event) => {
                          this.setState({query: event.target.value});
                          if (this.state.incremental) {
-                             search();
+                             this.doSearch();
                          }
                      },
                  }),
@@ -241,6 +214,37 @@ class SearchResults extends React.Component {
             e('ul' , {key: 'results', id: 'results'}, children),
         ]);
     }
+
+    doSearch = debounce(() => {
+        this.search();
+    }, 300);
+
+    search() {
+        // TODO !!! validate and do incremental search??
+        // TODO special mode?
+        const qq = document.querySelector('#query');
+        const q = qq.value;
+
+        reqwest({
+            url: `${ENDPOINT}?q=${q}&nhits=20`,
+            contentType: 'application/json',
+            method: 'GET',
+        }).then(res => {
+            // console.log(res);
+            // TODO eh? e.g. query duck, it results in multiple documents with same id??
+            // TODO what does id even mean here??
+            // "/menu/london/brick-lane/suito-japanese-platters"
+
+            // TODO show rating?
+
+            this.setState({results: res.hits, error: '' });
+        }, (err, msg) => {
+            console.error(err);
+            console.error(msg);
+            this.setState({error: `${err.status} ${err.statusText} ${msg}`});
+        });
+    }
+
 
     componentDidMount () {
         // TODO not sure if need some extra callback..
