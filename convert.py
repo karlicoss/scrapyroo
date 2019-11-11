@@ -125,8 +125,19 @@ def iter_menus(from_):
             # pound, pence = divmod(price, 1)
             ps = f'{price:.2f}'
 
+
+            def cleanup(s):
+                s = s.replace('\t', ' ')
+                s = s.replace('\r\n', ' ')
+                s = s.replace('\n', ' ')
+                return s
             # TODO meh.
-            (ps, iname, idesc) = map(lambda s: s.replace('\t', ''), (ps, iname, idesc))
+            (ps, iname, idesc) = map(cleanup, (ps, iname, idesc))
+            # TODO ugh
+            # Porcini mushrooms, champignon mushrooms,\r\ngnocchi potato, seaweed, soya cream, vegan parmesan\r\nextra virgin olive oil raw, sesame seeds.'
+            # if 'gnocchi potato' in idesc:
+            #     import ipdb; ipdb.set_trace()
+            #     raise RuntimeError()
 
             raw.append({
                 'name' : iname,
@@ -160,7 +171,8 @@ def iter_menus(from_):
             'url'  : url,
             'title': name or '',
             'body' : bodys,
-            'raw'  : raws,
+            # TODO unnecessary?
+            'raw'  : '',
         }
 
 if __name__ == '__main__':
