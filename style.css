@@ -6,6 +6,7 @@ html {
 
 
 :root {
+    --toc-ul-padding: none;
     --toc-left : 52%;
     --toc-right: none;
     --body-width: 50%;
@@ -17,11 +18,16 @@ html {
         /* color: red; */
     }
     :root {
+        --toc-ul-padding: 0.1em;
         --toc-left: none;
         --toc-right: 0%;
         --body-width: 72%;
         --sidebar-width: 25%;
     }
+}
+
+#toc ul {
+    padding-left: var(--toc-ul-padding);
 }
 
 
@@ -67,7 +73,7 @@ h1 {
     font-weight: bold;
 }
 .item .body {
-    padding-left: 3em;
+    /* padding-left: 3em; */
 }
 
 

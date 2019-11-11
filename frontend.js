@@ -181,6 +181,7 @@ class SearchResults extends React.Component {
                 checked: this.state.show_unmatched,
                 onChange: (e) => { this.setState({show_unmatched: e.target.checked});},
             }), "Show unmatched menu items"),
+            // TODO setting to debounce?
         );
 
         const status_c = this.state.status;
@@ -222,10 +223,6 @@ class SearchResults extends React.Component {
         ]);
     }
 
-    doSearch = debounce(() => {
-        this.search();
-    }, 300);
-
     search() {
         // TODO !!! validate and do incremental search??
         // TODO special mode?
@@ -255,6 +252,13 @@ class SearchResults extends React.Component {
 
 
     componentDidMount () {
+        // this.doSearch = debounce(() => {
+        //     this.search();
+        // }, 300);
+
+        this.doSearch = () => {
+            this.search();
+        };
         // TODO not sure if need some extra callback..
         const query = document.querySelector('#query');
         query.focus();
