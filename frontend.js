@@ -98,9 +98,12 @@ class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            query: 'fish and salad and -"fish cake"',
+            query: 'fish AND salad AND -"fish cake"',
             results: [],
-            error: '',
+
+            status: 'You can use: AND/OR operators, "exact matches" or negative terms: -excludeme',
+            error: false,
+
             debug: false,
             sort: true,
             show_unmwatched: false,
@@ -180,7 +183,7 @@ class SearchResults extends React.Component {
             }), "Show unmatched menu items"),
         );
 
-        const error_c = this.state.error;
+        const status_c = this.state.status;
         return e('div', {}, [
             e('div', {key: 'settings', id: 'sidebar'},
               toc,
@@ -214,7 +217,7 @@ class SearchResults extends React.Component {
                     type: 'submit',
                 }, '🔍'),
             ])),
-            e('div', {key: 'error'  , id: 'error', className: 'error'}, error_c),
+            e('div', {key: 'status' , id: 'status', className: this.state.error ? 'error': ''}, status_c),
             e('ul' , {key: 'results', id: 'results'}, children),
         ]);
     }
@@ -241,11 +244,12 @@ class SearchResults extends React.Component {
 
             // TODO show rating?
 
-            this.setState({results: res.hits, error: '' });
+            const hits = res.hits;
+            this.setState({results: hits, error: false, status: `${this.state.query}: ${hits.length} results` });
         }, (err, msg) => {
             console.error(err);
             console.error(msg);
-            this.setState({error: `${err.status} ${err.statusText} ${msg}`});
+            this.setState({error: true, status: `${err.status} ${err.statusText} ${msg}`});
         });
     }
 
