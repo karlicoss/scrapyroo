@@ -44,12 +44,12 @@ function handle_body(that, res) {
     for (let [start, stop, si] of highlighted) {
         hl += body.substring(cur, start);
 
-        hl += `<span class='highlight'>`;
+        const dbgcls = that.state.debug ? `snippet_${si}` : '';
+        hl += `<span class='highlight ${dbgcls}'>`;
         hl += body.substring(start, stop);
         hl += "</span>";
-        const dbgcls = that.state.debug ? 'debug' : 'nodebug';
         // TODO mm, maybe make them invisible or something
-        hl += `<sup class='snippet snippet_${si} ${dbgcls}'>${si}</sup>`;
+        // hl += `<sup class='snippet snippet_${si} ${dbgcls}'>${si}</sup>`;
         cur = stop;
     }
     hl += body.substring(stop, body.length);

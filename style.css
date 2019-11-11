@@ -119,25 +119,32 @@ a.back {
     font-weight: bold;
 }
 
-.snippet {
+.highlight:after {
     font-weight: bold;
-    color: magenta;
+    user-select: none;
+
+    font-size: larger;
+    background: white;
+
+    z-index: 100;
+    position: absolute;
+
 }
 
-.snippet_0  { color: violet }
-.snippet_1  { color: indigo }
-.snippet_2  { color: blue   }
-.snippet_3  { color: green  }
-.snippet_4  { color: brown }
-.snippet_5  { color: orange }
-.snippet_6  { color: red    }
-.snippet_7  { color: violet }
-.snippet_8  { color: indigo }
-.snippet_9  { color: blue   }
-.snippet_10 { color: green  }
-.snippet_11 { color: brown }
-.snippet_12 { color: orange }
-.snippet_13 { color: red    }
+.snippet_0:after  { content: "0" ; color: violet }
+.snippet_1:after  { content: "1" ; color: indigo }
+.snippet_2:after  { content: "2" ; color: blue   }
+.snippet_3:after  { content: "3" ; color: green  }
+.snippet_4:after  { content: "4" ; color: brown }
+.snippet_5:after  { content: "6" ; color: orange }
+.snippet_6:after  { content: "6" ; color: red    }
+.snippet_7:after  { content: "7" ; color: violet }
+.snippet_8:after  { content: "8" ; color: indigo }
+.snippet_9:after  { content: "9" ; color: blue   }
+.snippet_10:after { content: "10"; color: green  }
+.snippet_11:after { content: "11"; color: brown }
+.snippet_12:after { content: "12"; color: orange }
+.snippet_13:after { content: "13"; color: red    }
 
 .snippet.nodebug {
     color: transparent;
