@@ -107,6 +107,9 @@ class SearchResults extends React.Component {
             debug: false,
             sort: true,
             show_unmwatched: false,
+
+            // TODO FIXME
+            debounce: false,
             incremental: true,
         };
     }
@@ -156,6 +159,12 @@ class SearchResults extends React.Component {
         ));
         const controls = e(
             'div', {key: 'controls', id: 'controls'},
+            e('div', {}, e('input', {
+                type: 'checkbox',
+                key: 'debounce-checkbox',
+                checked: this.state.debounce,
+                onChange: (e) => { this.setState({debounce: e.target.checked});},
+            }), "Debounce"),
             e('div', {}, e('input', {
                 type: 'checkbox',
                 key: 'incremental-checkbox',
@@ -250,15 +259,18 @@ class SearchResults extends React.Component {
         });
     }
 
-
+    componentDidUpdate() {
+        if (this.state.debounce) {
+            this.doSearch = debounce(() => {
+                this.search();
+            }, 300);
+        } else {
+            this.doSearch = () => {
+                this.search();
+            };
+        }
+    }
     componentDidMount () {
-        // this.doSearch = debounce(() => {
-        //     this.search();
-        // }, 300);
-
-        this.doSearch = () => {
-            this.search();
-        };
         // TODO not sure if need some extra callback..
         const query = document.querySelector('#query');
         query.focus();
