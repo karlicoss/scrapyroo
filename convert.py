@@ -47,10 +47,25 @@ def index_py(path: Path, purge: bool=False):
 
     # TODO how to reuse schema??
     schema_builder = tantivy.SchemaBuilder()
-    schema_builder.add_text_field('title', stored=True, index_option='position')
-    schema_builder.add_text_field('body' , stored=True, index_option='position')
-    # TODO doesn't support 'indexing': none??
-    schema_builder.add_text_field('url'  , stored=True, index_option='position')
+    schema_builder.add_text_field(
+        'title',
+        stored=True,
+        tokenizer_name='en_stem',
+        index_option='position',
+    )
+    schema_builder.add_text_field(
+        'body',
+        stored=True,
+        tokenizer_name='en_stem',
+        index_option='position',
+    )
+    schema_builder.add_text_field(
+        'url',
+        stored=True,
+        # TODO 'basic' results in
+        # Panicked at 'Parsing the query failed: FieldDoesNotHavePositionsIndexed("url")'
+        index_option='position',
+    )
     schema = schema_builder.build()
 
     # idx = tantivy.Index(schema, 'scrapyroo-index', reuse=True)
@@ -138,6 +153,7 @@ def iter_menus(from_):
             # if 'gnocchi potato' in idesc:
             #     import ipdb; ipdb.set_trace()
             #     raise RuntimeError()
+            # TODO mm, delivery time would be tricky without more realtime indexing?
 
             raw.append({
                 'name' : iname,
