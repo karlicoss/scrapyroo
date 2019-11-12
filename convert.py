@@ -26,23 +26,27 @@ note: Run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('input', type=Path)
-    p.add_argument('--purge-index', action='store_true')
+    p.add_argument('--index', type=Path, required=True)
+    p.add_argument('--purge', action='store_true')
+    p.add_argument('--reuse', action='store_true')
     args = p.parse_args()
     path = args.input
 
-    # indexer = index_py
-    indexer = index_cli
+    indexer = index_py
+    # indexer = index_cli
 
-    # ipath = Path('scrapyroo-index-2') # TODO FIXME
-    if args.purge_index:
-        check_call(['scrapyroo-index/clean'])
-        # shutil.rmtree(str(ipath))
-        # ipath.mkdir()
+    indexer(
+        path,
+        index=args.index,
+        purge=args.purge,
+        reuse=args.reuse,
+    )
 
-    indexer(path, purge=args.purge_index)
+def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
+    if purge:
+        shutil.rmtree(str(index))
+        index.mkdir()
 
-def index_py(path: Path, purge: bool=False):
-    assert purge # TODO not sure what do we do?
     import tantivy # type: ignore
 
     # TODO how to reuse schema??
@@ -68,11 +72,9 @@ def index_py(path: Path, purge: bool=False):
     )
     schema = schema_builder.build()
 
-    # idx = tantivy.Index(schema, 'scrapyroo-index', reuse=True)
-    index = tantivy.Index(schema, 'scrapyroo-index-2')
+    idx = tantivy.Index(schema, str(index), reuse=reuse)
 
-    writer = index.writer()
-
+    writer = idx.writer()
     with path.open('r') as fo:
         for m in iter_menus(fo):
             writer.add_document(tantivy.Document(**m))
@@ -91,7 +93,11 @@ def index_py(path: Path, purge: bool=False):
         # pprint(doc.to_dict())
 
 
-def index_cli(path: Path, purge: bool=False):
+def index_cli(path: Path, purge: bool=False, reuse: bool=False):
+    assert not reuse
+    if purge:
+        check_call(['scrapyroo-index/clean'])
+
     with tempfile.TemporaryDirectory() as tdir:
         tfile = Path(tdir) / 'data.json'
         with tfile.open('w') as tf, path.open('r') as ff:
@@ -99,8 +105,10 @@ def index_cli(path: Path, purge: bool=False):
                 json.dump(o, tf)
                 tf.write('\n')
 
+        tantivy_bin = 'tantivy'
+        tantivy_bin = '/L/coding/tantivy-cli/target/x86_64-unknown-linux-musl/release/tantivy'
         with tfile.open('r') as fo:
-            check_call(['tantivy', 'index', '-i', 'scrapyroo-index'], stdin=fo)
+            check_call([tantivy_bin, 'index', '-i', 'scrapyroo-index'], stdin=fo)
 
 def iter_menus(from_):
     processed = {}
