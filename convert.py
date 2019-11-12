@@ -50,7 +50,7 @@ def index_py(path: Path, purge: bool=False):
     schema_builder.add_text_field('title', stored=True, index_option='position')
     schema_builder.add_text_field('body' , stored=True, index_option='position')
     # TODO doesn't support 'indexing': none??
-    schema_builder.add_text_field('url'  , stored=True, index_option='basic')
+    schema_builder.add_text_field('url'  , stored=True, index_option='position')
     schema = schema_builder.build()
 
     # idx = tantivy.Index(schema, 'scrapyroo-index', reuse=True)
@@ -172,7 +172,7 @@ def iter_menus(from_):
             'title': name or '',
             'body' : bodys,
             # TODO unnecessary?
-            'raw'  : '',
+            # 'raw'  : '',
         }
 
 if __name__ == '__main__':
