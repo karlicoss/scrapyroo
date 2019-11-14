@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+from pathlib import Path
+from subprocess import Popen
+import time
+
+# echo "Go to $(readlink -f "$(dirname "$0")")/index.html"
+
+def run_one(*, cli: Path, index: Path):
+    if not cli.is_absolute():
+        cli = Path(__file__).parent.absolute() / cli
+    return Popen([
+        cli,
+        'serve',
+        '--index', str(index),
+    ])
+
+
+def timestamp(index: Path):
+    try:
+        return index.stat().st_mtime
+    except:
+        return None
+
+
+def run(*, cli: Path, index: Path) -> None:
+    ts = None
+    server = None
+    while True:
+        nts = timestamp(index)
+        if ts != nts:
+            print("Detected index change. Rerunning")
+            if server is not None:
+                server.kill()
+            server = run_one(cli=cli, index=index)
+            ts = nts
+        time.sleep(1)
+    # TODO FIXME defensive?
+
+
+def main():
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument('--index', type=Path, required=True)
+    p.add_argument('--cli', type=Path, default='./tantivy-cli')
+    args = p.parse_args()
+    run(cli=args.cli, index=args.index)
+
+
+if __name__ == '__main__':
+    main()
