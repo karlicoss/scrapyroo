@@ -76,21 +76,26 @@ def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
 
     writer = idx.writer()
     with path.open('r') as fo:
+        items = 0
         for m in iter_menus(fo):
+            items += 1
             writer.add_document(tantivy.Document(**m))
-    writer.commit()
+    opstamp = writer.commit()
+    print(f"Finished reindexing {items} items; opstamp {opstamp}")
 
-    index.reload()
 
-    searcher = index.searcher()
-    query = index.parse_query("chicken AND soup", ['title', 'body', 'url'])
+    test_query = "chicken AND soup"
+    print(f"Testing query: '{test_query}'")
+    searcher = idx.searcher()
+    query = idx.parse_query(test_query, ['title', 'body', 'url'])
     top_docs = tantivy.TopDocs(20)
 
     from pprint import pprint
     for score, address in searcher.search(query, top_docs):
-        doc = searcher.doc(address)
-        print(doc)
-        # pprint(doc.to_dict())
+        dd = searcher.doc(address).to_dict()
+        title = dd['title'][0] # TODO FIMXE why 0 index?
+        url = dd['url'][0]
+        print(f'{title}\n    {url}')
 
 
 def index_cli(path: Path, purge: bool=False, reuse: bool=False):
