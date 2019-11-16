@@ -75,6 +75,7 @@ def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
     idx = tantivy.Index(schema, str(index), reuse=reuse)
 
     writer = idx.writer()
+    # writer.delete_all_documents()
     with path.open('r') as fo:
         items = 0
         for m in iter_menus(fo):

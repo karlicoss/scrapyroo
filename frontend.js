@@ -26,7 +26,8 @@ function handle_body(that, res) {
         return e('div', {key: 'error', className: 'error'}, "ERROR: empty snippet");
     }
 
-    body = snippets[0].fragments; // TODO??
+    body = res.doc.body[0];
+    // body = snippets[0].fragments; // TODO??
 
     let highlighted = [];
     let sidx = 0;
