@@ -10,25 +10,12 @@ import tempfile
 import argparse
 
 
-# TODO odd, with scrapyroo-index-2 it doesn't work quite well
-"""
-cargo run serve --index /L/coding/scrapyroo/scrapyroo-index-2 2>&1 | tee log
-    Finished dev [unoptimized + debuginfo] target(s) in 0.11s
-     Running `target/debug/tantivy serve --index /L/coding/scrapyroo/scrapyroo-index-2`
-thread 'main' panicked at 'attempt to shift left with overflow', /L/coding/tantivy/src/common/vint.rs:152:31
-note: Run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-"""
-
-# that works fine though..
-# cargo run serve --index /L/coding/scrapyroo/scrapyroo-index 2>&1 | tee log
-
-
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('input', type=Path)
     p.add_argument('--index', type=Path, required=True)
-    p.add_argument('--purge', action='store_true')
-    p.add_argument('--reuse', action='store_true')
+    p.add_argument('--reuse', action='store_true', help='Reuse existing index')
+    p.add_argument('--purge', action='store_true', help='Purge index before repoopulating')
     args = p.parse_args()
     path = args.input
 
@@ -124,9 +111,9 @@ def iter_menus(from_):
         rest = j['restaurant']
         menu = j['menu']['items']
         url = j['urls']['current']
-        # TODO not sure why there were multiple results in some queries
         if url in processed:
-            print(f"WARNING: multiple scraped results for {url}")
+            # not sure why that happens, most likely some data races/pagination artifacts
+            print(f"WARNING: multiple scraped results for {url}", file=sys.stderr)
             continue
         processed[url] = j
 
@@ -135,53 +122,32 @@ def iter_menus(from_):
         # TODO uname?
         # TODO opens_at/closes_at
         # TODO address?
-        # TODO maybe just store the whole thing?
 
         bodies = [
-            # desc or '', # TODO note sure if I really need it
+            # desc or '', # eh, not sure if I really need it
         ]
         raw = []
 
-        # TODO could explain how I'm compensating for lack of hierarchical search?
-        # TODO not sure if need some sentinels?
-
-        # TODO can we keep this in index??
-        # TODO serialize
         for m in menu:
             iname = m['name']
             idesc = m['description'] or ''
             price = m['raw_price']
-            # pound, pence = divmod(price, 1)
             ps = f'{price:.2f}'
 
-
+            # TODO meh.
             def cleanup(s):
                 s = s.replace('\t', ' ')
                 s = s.replace('\r\n', ' ')
                 s = s.replace('\n', ' ')
                 return s
-            # TODO meh.
             (ps, iname, idesc) = map(cleanup, (ps, iname, idesc))
-            # TODO ugh
-            # Porcini mushrooms, champignon mushrooms,\r\ngnocchi potato, seaweed, soya cream, vegan parmesan\r\nextra virgin olive oil raw, sesame seeds.'
-            # if 'gnocchi potato' in idesc:
-            #     import ipdb; ipdb.set_trace()
-            #     raise RuntimeError()
-            # TODO mm, delivery time would be tricky without more realtime indexing?
 
             raw.append({
                 'name' : iname,
                 'price': ps,
                 'description': idesc,
             })
-            # TODO use positions to highlight?
             bodies.append(ps + '\t' + iname + '\t' + idesc)
-
-        # TODO FIXME issue in cocotte
-        # https://repl.it/languages/rust
-        # if 'Add Chicken Soup' in body:
-        #     import ipdb; ipdb.set_trace() 
-        #     pass
 
         # TODO post about it?
         # dbg!(text.len());
@@ -193,16 +159,10 @@ def iter_menus(from_):
         bodies = [deunicode(s) for s in bodies]
         bodys = '\n'.join(bodies)
 
-        # TODO FIXME eh. how to correlate price back?..
-        # TODO maybe, include some markers??
-        raws = json.dumps(raw)
-
         yield {
             'url'  : url,
             'title': name or '',
             'body' : bodys,
-            # TODO unnecessary?
-            # 'raw'  : '',
         }
 
 if __name__ == '__main__':
