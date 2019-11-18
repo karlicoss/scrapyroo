@@ -1,49 +1,34 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from subprocess import Popen
+import sys
+from subprocess import check_call
 import time
 
-# echo "Go to $(readlink -f "$(dirname "$0")")/index.html"
-
-def run_one(*, cli: Path, index: Path):
-    if not cli.is_absolute():
-        cli = Path(__file__).parent.absolute() / cli
-    return Popen([
-        cli,
-        'serve',
-        '--index', str(index),
-    ])
-
-
-def timestamp(index: Path):
-    try:
-        return index.stat().st_mtime
-    except:
-        return None
-
-
-def run(*, cli: Path, index: Path) -> None:
-    ts = None
-    server = None
+def run(args) -> None:
+    cli: Path   = args.cli
+    index: Path = args.index
     while True:
-        nts = timestamp(index)
-        if ts != nts:
-            print("Detected index change. Rerunning")
-            if server is not None:
-                server.kill()
-            server = run_one(cli=cli, index=index)
-            ts = nts
-        time.sleep(1)
-    # TODO FIXME defensive?
+        try:
+            check_call([
+                str(cli),
+                'serve',
+                '--index', str(index)
+            ])
+        except BaseException as e:
+            # it never crashed before, but would be awkward if it does do it live!
+            print("whoops! something went wrong!", file=sys.stderr)
+            print(str(e), file=sys.stderr)
+
+        time.sleep(3)
 
 
 def main():
     import argparse
     p = argparse.ArgumentParser()
-    p.add_argument('--index', type=Path, required=True)
-    p.add_argument('--cli', type=Path, default='./tantivy-cli')
+    p.add_argument('--index', type=Path, default='./scrapyroo-index')
+    p.add_argument('--cli', type=Path, default='./tantivy-cli/bin/tantivy')
     args = p.parse_args()
-    run(cli=args.cli, index=args.index)
+    run(args)
 
 
 if __name__ == '__main__':
