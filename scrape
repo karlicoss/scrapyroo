@@ -4,9 +4,6 @@ from subprocess import check_call
 from pathlib import Path
 import os
 
-import render
-
-
 def main():
     p = ArgumentParser()
     render.setup_parser(p)
@@ -36,8 +33,9 @@ def main():
 
     jpath_tmp.rename(args.json)
 
-    print("rendering...")
-    render.run(args)
+    # import render
+    # print("rendering...")
+    # render.run(args)
 
 
 if __name__ == '__main__':
