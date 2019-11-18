@@ -1,3 +1,0 @@
-#!/bin/bash -eux
-INDEX="$(readlink -f "$(dirname "$0")")/index.html"
-exec chromium-browser --disable-web-security --user-data-dir=/L/tmp/whatever "$INDEX"  &
