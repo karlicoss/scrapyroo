@@ -45,7 +45,7 @@ def main():
 def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
     if purge:
         shutil.rmtree(str(index))
-        index.mkdir()
+    index.mkdir(exist_ok=True)
 
     import tantivy # type: ignore
 
@@ -75,7 +75,7 @@ def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
     idx = tantivy.Index(schema, str(index), reuse=reuse)
 
     writer = idx.writer()
-    # writer.delete_all_documents()
+    writer.delete_all_documents()
     with path.open('r') as fo:
         items = 0
         for m in iter_menus(fo):

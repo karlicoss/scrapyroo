@@ -119,6 +119,10 @@ a:active {
     padding-left: 0;
 }
 
+#endpoint {
+    width: 40ch;
+}
+
 .menu td {
     vertical-align: top;
 }

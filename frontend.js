@@ -5,9 +5,6 @@ function debounce(a,b,c){var d,e;return function(){function h(){d=null,c||(e=a.a
 const e = React.createElement;
 
 
-const ENDPOINT = 'http://localhost:3000/api/';
-// const ENDPOINT = 'https://scrapyroo.karlicoss.xyz/search/api/';
-
 function handle_body(that, res) {
     // TODO not sure why it's an array of length 1?
     // const body = res.doc.body[0];
@@ -158,8 +155,21 @@ class SearchResults extends React.Component {
                 }, handle_body(this, res)),
             ]
         ));
+        const endpoint_localhost = 'http://localhost:3000';
+        const endpoint_remote = 'https://scrapyroo.karlicoss.xyz/search';
         const controls = e(
             'div', {key: 'controls', id: 'controls'},
+            e('div', {}, e('input', {
+                type: 'input',
+                id: 'endpoint',
+                key: 'endpoint-input',
+                list: 'endpoints',
+                defaultValue: endpoint_remote,
+            })),
+            e('datalist', {id: 'endpoints'},
+              e('option', {value: endpoint_localhost}),
+              e('option', {value: endpoint_remote}),
+             ),
             e('div', {}, e('input', {
                 type: 'checkbox',
                 key: 'debounce-checkbox',
@@ -201,11 +211,12 @@ class SearchResults extends React.Component {
               controls,
              ),
             e('form', {
-                 key: 'search-form',
-                 onSubmit: (e) => {
-                     this.search();
-                     e.preventDefault();
-                 }
+                key: 'search-form',
+                autoComplete: 'off',
+                onSubmit: (e) => {
+                    this.search();
+                    e.preventDefault();
+                }
             }, e('div', {
                 key: 'search-form-container',
                 id: 'search-line'
@@ -235,12 +246,14 @@ class SearchResults extends React.Component {
 
     search() {
         // TODO !!! validate and do incremental search??
-        // TODO special mode?
         const qq = document.querySelector('#query');
         const q = qq.value;
 
+        const endpoint = document.querySelector('#endpoint').value + '/api/';
+
         reqwest({
-            url: `${ENDPOINT}?q=${q}&nhits=20`,
+            // TODO FIXME not sure if we should pass nhits at all?
+            url: `${endpoint}?q=${q}&nhits=20`,
             contentType: 'application/json',
             method: 'GET',
         }).then(res => {
