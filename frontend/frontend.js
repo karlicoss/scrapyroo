@@ -7,37 +7,22 @@ const e = React.createElement;
 
 function handle_body(that, res) {
     // TODO not sure why it's an array of length 1?
-    // const body = res.doc.body[0];
-    const snippets = res.snippets;
-
-
     let body = res.doc.body[0];
-    // console.log(body);
-    // console.log(snippets[0].fragments);
+    const highlights = res.highlights;
 
-    // for (let i = 0; i < body.length; i++) {
-    //     console.log(i, body[i]);
-    // }
-
-    if (snippets.length == 0) {
+    if (highlights.length == 0) {
         return e('div', {key: 'error', className: 'error'}, "ERROR: empty snippet");
     }
 
-    body = res.doc.body[0];
-    // body = snippets[0].fragments; // TODO??
-
     let highlighted = [];
     let sidx = 0;
-    for (const snippet of snippets) {
+    for (const snippet of highlights) {
 
-        const hls = snippet.highlighted.map(([start, stop]) => [start, stop, sidx]);
-        // TODO bodies are all same?
+        const hls = snippet.positions.map(([start, stop]) => [start, stop, sidx]);
         highlighted = highlighted.concat(hls);
         sidx++;
     }
     highlighted.sort((a, b) => a[0] - b[0]);
-
-
 
     let hl = "";
     let cur = 0;
@@ -53,8 +38,6 @@ function handle_body(that, res) {
         cur = stop;
     }
     hl += body.substring(stop, body.length);
-    // TODO FIXME weird, snippets 
-    // TODO write about that?
 
     const split = hl.split('\n');
     let matched = [];
