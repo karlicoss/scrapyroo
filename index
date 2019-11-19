@@ -12,9 +12,8 @@ import argparse
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('input', type=Path)
-    p.add_argument('--index', type=Path, required=True)
-    p.add_argument('--reuse', action='store_true', help='Reuse existing index')
+    p.add_argument('input', type=Path, help='json menus to index')
+    p.add_argument('--index', type=Path, default='./scrapyroo-index', help='Tantivy index to use')
     p.add_argument('--purge', action='store_true', help='Purge index before repoopulating')
     args = p.parse_args()
     path = args.input
@@ -26,7 +25,7 @@ def main():
         path,
         index=args.index,
         purge=args.purge,
-        reuse=args.reuse,
+        reuse=True, # not sure why one would want the opposite..
     )
 
 def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
@@ -36,7 +35,6 @@ def index_py(path: Path, *, index: Path, purge: bool=False, reuse: bool=False):
 
     import tantivy # type: ignore
 
-    # TODO how to reuse schema??
     schema_builder = tantivy.SchemaBuilder()
     schema_builder.add_text_field(
         'title',
