@@ -98,8 +98,17 @@ a:active {
     text-decoration: underline;
 }
 
+#search-line-extra {
+    position: fixed;
+    min-width: var(--body-width);
+    background: white;
+    height: 5em;
+    border: 1px dashed;
+}
+
 #search-line {
     display: flex;
+    width: 100%;
 }
 
 #query {
@@ -116,6 +125,7 @@ a:active {
 }
 
 #results {
+    padding-top: 5em;
     padding-left: 0;
 }
 
@@ -168,6 +178,15 @@ a.back {
 .snippet_12:after { content: "12"; color: orange }
 .snippet_13:after { content: "13"; color: red    }
 
-.snippet.nodebug {
+
+.score {
     color: transparent;
 }
+
+.debug {
+    color: black;
+}
+
+/* .snippet.nodebug { */
+/*     color: transparent; */
+/* } */

@@ -82,7 +82,7 @@ class SearchResults extends React.Component {
             query: 'fish AND salad AND -"fish cake"',
             results: [],
 
-            status: 'You can use: AND/OR operators, "exact matches" or negative terms: -excludeme',
+            status: '',
             error: false,
 
             debug: false,
@@ -102,11 +102,11 @@ class SearchResults extends React.Component {
             res => e('li', {
                 key: res.doc.url[0],
             }, [
-                `${res.score.toFixed(1)} `,
                 e('a', {
                     key: 'link',
                     href: `#${uuid(res)}`,
                 }, `${res.doc.title}`),
+                e('span', {key: 'score', className: 'score' + (this.state.debug ? 'debug' : '')}, ` ${res.score.toFixed(1)} `),
             ]),
         );
         const toc = e('div', {
@@ -126,7 +126,7 @@ class SearchResults extends React.Component {
                     // TODO actually don't really need it?
                     // e('a', {key: 'back', href: '#toc', className: 'back'}, 'back '), // TODO arrow up
                     // TODO 'next' button for quick jumping?
-                    e('div', {key: 'score'}, `score: ${res.score.toFixed(2)} `),
+                    e('div', {key: 'score', className: 'score ' + (this.state.debug ? 'debug' : '')}, `score: ${res.score.toFixed(2)} `),
                     e('a', {
                         key: 'link',
                         href: "https://deliveroo.co.uk" + res.doc.url[0],
@@ -193,36 +193,44 @@ class SearchResults extends React.Component {
               toc,
               controls,
              ),
-            e('form', {
-                key: 'search-form',
-                autoComplete: 'off',
-                onSubmit: (e) => {
-                    this.search();
-                    e.preventDefault();
-                }
-            }, e('div', {
-                key: 'search-form-container',
-                id: 'search-line'
+            e('div', {
+                key: 'search-line-extra',
+                id: 'search-line-extra',
             }, [
-                e('input', {
-                     key: 'query',
-                     type: 'text',
-                     id: 'query',
-                     value: this.state.query,
-                     onChange: (event) => {
-                         this.setState({query: event.target.value});
-                         if (this.state.incremental) {
-                             this.doSearch();
-                         }
-                     },
-                 }),
-                e('button', {
-                    key: 'submit',
-                    id: 'search',
-                    type: 'submit',
-                }, '🔍'),
-            ])),
-            e('div', {key: 'status' , id: 'status', className: this.state.error ? 'error': ''}, status_c),
+                'You can use: AND/OR operators, "exact matches" or negative terms: -excludeme',
+                e('form', {
+                    key: 'search-form',
+                    autoComplete: 'off',
+                    onSubmit: (e) => {
+                        this.search();
+                        e.preventDefault();
+                    }
+                }, [
+                    e('div', {
+                        key: 'search-form-container',
+                        id: 'search-line'
+                    }, [
+                        e('input', {
+                            key: 'query',
+                            type: 'text',
+                            id: 'query',
+                            value: this.state.query,
+                            onChange: (event) => {
+                                this.setState({query: event.target.value});
+                                if (this.state.incremental) {
+                                    this.doSearch();
+                                }
+                            },
+                        }),
+                        e('button', {
+                            key: 'submit',
+                            id: 'search',
+                            type: 'submit',
+                        }, '🔍'),
+                    ])
+                ]),
+                e('div', {key: 'status' , id: 'status', className: this.state.error ? 'error': ''}, status_c),
+            ]),
             e('ul' , {key: 'results', id: 'results'}, children),
         ]);
     }
