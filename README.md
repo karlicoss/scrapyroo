@@ -1,6 +1,6 @@
 Cause I got sick of clicking through Deliveroo restaurants. Full text search is a basic human right!
 
-<img src="https://user-images.githubusercontent.com/291333/52899011-dd7c7c80-31dc-11e9-834d-668a5cc872f7.png"/>
+<img src="https://user-images.githubusercontent.com/291333/69106349-f82e9b00-0a65-11ea-9b9b-1fd45ebf4446.png"/>
 
 # Setup and usage
 ## Scraper
