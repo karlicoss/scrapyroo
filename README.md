@@ -1,6 +1,6 @@
 Cause I got sick of clicking through Deliveroo restaurants. Full text search is a basic human right!
 
-[Slides](https://github.com/karlicoss/scrapyroo-slides) from November Rust London [meetup](https://www.meetup.com/Rust-London-User-Group/events/266262531/).
+[Slides](https://github.com/karlicoss/scrapyroo-slides) from November Rust London [meetup](https://www.meetup.com/Rust-London-User-Group/events/266262531/) + [speaker notes](https://beepb00p.xyz/scrapyroo.html).
 
 <img src="https://user-images.githubusercontent.com/291333/69106349-f82e9b00-0a65-11ea-9b9b-1fd45ebf4446.png"/>
 
