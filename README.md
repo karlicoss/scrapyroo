@@ -1,6 +1,6 @@
 Cause I got sick of clicking through Deliveroo restaurants. Full text search is a basic human right!
 
-[Slides](https://github.com/karlicoss/scrapyroo-slides) from November Rust London [meetup](https://www.meetup.com/Rust-London-User-Group/events/266262531/) + [speaker notes](https://beepb00p.xyz/scrapyroo.html).
+[Slides + speaker notes](https://beepb00p.xyz/scrapyroo.html) from November Rust London [meetup](https://www.meetup.com/Rust-London-User-Group/events/266262531/).
 
 <img src="https://user-images.githubusercontent.com/291333/69106349-f82e9b00-0a65-11ea-9b9b-1fd45ebf4446.png"/>
 
@@ -16,12 +16,28 @@ to your crontab to run once a day, e.g. in the morning or something. Presumably,
 
 ## Indexer
 
-TODO install py?
+Install [tantivy-py](https://github.com/tantivy-search/tantivy-py), custom branch needed for extra functionality that's not merged yet:
+
+```
+cargo install  \
+--git https://github.com/karlicoss/tantivy-py \
+--branch delete-all-documents
+```
 
     ./index --index /path/to/tantivy-index /path/to/menus.jsonl
 
 
 ## Backend
+
+Install [tantivy-cli](https://github.com/tantivy-search/tantivy-cli), custom branch needed at the moment to expose highlights via the API:
+
+```
+cargo install  \
+--git https://github.com/karlicoss/tantivy-cli \
+--branch serve-snippets
+```
+
+Tantivy runs on port 3000 by default
 
     ./serve --index /path/to/tantivy-index
 
@@ -31,4 +47,4 @@ NOTE: if you're running page locally, you're gonna need to pass by [CORS](https:
 
 You can do it by e.g. using Chromium with no web security:
 
-    chromium-browser --disable-web-security --user-data-dir=/L/tmp/whatever frontend/index.html
+    chromium-browser --disable-web-security --user-data-dir=/tmp/whatever frontend/index.html
