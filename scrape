@@ -6,7 +6,8 @@ import os
 
 def main():
     p = ArgumentParser()
-    render.setup_parser(p)
+    p.add_argument('--json', type=Path, default=Path('menus.jl'))
+    p.add_argument('--base-url', type=str, default='https://deliveroo.co.uk')
     p.add_argument('--area', required=True)
     p.add_argument('--postcode', required=True)
     args = p.parse_args()
@@ -32,10 +33,6 @@ def main():
         raise RuntimeError("Scrapy didn't receive any results :(")
 
     jpath_tmp.rename(args.json)
-
-    # import render
-    # print("rendering...")
-    # render.run(args)
 
 
 if __name__ == '__main__':
